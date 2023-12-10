@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon_1.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32_1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16_1.png">
+  <link rel="mask-icon" href="/images/android-chrome-512x512_1.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="主要参考材料为  Qt官方文档. Qt VS开发手册.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CG报告01 Qt初步">
+<meta property="og:url" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/index.html">
+<meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="主要参考材料为  Qt官方文档. Qt VS开发手册.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/image-20231207124422846.png">
+<meta property="og:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/image-20231207135741256.png">
+<meta property="og:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/image-20231207151027478.png">
+<meta property="og:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/20210309162438677.png">
+<meta property="og:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/image-20231208155401387.png">
+<meta property="og:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/image-20231208155446254.png">
+<meta property="article:published_time" content="2023-12-08T12:59:47.000Z">
+<meta property="article:modified_time" content="2023-12-08T13:26:06.555Z">
+<meta property="article:author" content="hefan">
+<meta property="article:tag" content="Computer Graphics">
+<meta property="article:tag" content="Qt5">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/image-20231207124422846.png">
+
+<link rel="canonical" href="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CG报告01 Qt初步 | Fan's Page</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fan's Page</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CG报告01 Qt初步
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2023-12-08 20:59:47 / Modified: 21:26:06" itemprop="dateCreated datePublished" datetime="2023-12-08T20:59:47+08:00">2023-12-08</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>主要参考材料为</p>
+<ul>
+<li><a target="_blank" rel="noopener" href="https://wiki.qt.io/">Qt官方文档</a>.</li>
+<li><a target="_blank" rel="noopener" href="https://doc.qt.io/qtvstools/index.html">Qt VS开发手册</a>.</li>
+</ul>
+<span id="more"></span>
+<h2 id="利用qactionqmenuqtoolbar构建应用程序">利用QAction、QMenu、QToolBar构建应用程序</h2>
+<p>QMenu是Qt中的菜单类，常常挂载在菜单栏类QMenuBar上. 下图中标题栏下方的水平栏即为菜单栏，其中各个子选项即为菜单类.</p>
+<p><img data-src="image-20231207124422846.png" alt="image-20231207124422846" style="zoom:50%;" /></p>
+<p>我们的主界面继承QMainWindow时，其本身含有menuBar()成员. 使用menuBar()可以得到菜单栏QMenuBar指针，然后就可以直接添加QMenu或者QAction.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">QMenuBar* MenuBar = <span class="keyword">this</span>-&gt;<span class="built_in">menuBar</span>();</span><br><span class="line"><span class="keyword">this</span>-&gt;<span class="built_in">setMenuBar</span>(MenuBar);</span><br></pre></td></tr></table></figure>
+<p>通过上述代码，我们为主界面设置好了菜单栏. 接下来为其添加菜单.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">QMenu* fileMenu = MenuBar-&gt;<span class="built_in">addMenu</span>(<span class="string">&quot;File&quot;</span>);</span><br><span class="line">QMenu* editMenu = MenuBar-&gt;<span class="built_in">addMenu</span>(<span class="string">&quot;Edit&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>而后为菜单添加下拉项，设置用户点击某项时的操作.</p>
+<p>在图形化界面中，同一操作可由不同的方式所触发，如快捷键、菜单栏选项等. 从面向对象出发，将操作抽象成为QAction类.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">QAction* build_act = fileMenu-&gt;<span class="built_in">addAction</span>(<span class="string">&quot;New&quot;</span>);</span><br><span class="line">fileMenu-&gt;<span class="built_in">addSeparator</span>();</span><br><span class="line">QAction* open_act = fileMenu-&gt;<span class="built_in">addAction</span>(<span class="string">&quot;Open&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>其中 addSeperator 为下拉项间添加了一条分割线.</p>
+<p>至此，我们的界面如下.</p>
+<p><img data-src="image-20231207135741256.png" alt="image-20231207135741256" style="zoom:50%;" /></p>
+<p>亦可设置二级菜单.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">QMenu *sub_menu = <span class="keyword">new</span> <span class="built_in">QMenu</span>(<span class="string">&quot;help&quot;</span>);</span><br><span class="line">menu-&gt;<span class="built_in">addMenu</span>(sub_menu);</span><br><span class="line">sub_menu-&gt;<span class="built_in">addAction</span>(<span class="string">&quot;Document&quot;</span>);</span><br><span class="line">sub_menu-&gt;<span class="built_in">addAction</span>(<span class="string">&quot;about&quot;</span>);</span><br></pre></td></tr></table></figure>
+<p>效果如下.</p>
+<p><img data-src="image-20231207151027478.png" alt="image-20231207151027478" style="zoom:67%;" /></p>
+<p>如何实现程序对我们操作的反应？我们使用 connect() 函数 .</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//connect(信号发射方，信号，信号接收方，槽函数);</span></span><br><span class="line"><span class="built_in">connect</span>(hello_world_action_, &amp;QAction::triggered, <span class="keyword">this</span>, &amp;MainWindow::HelloWorld);</span><br></pre></td></tr></table></figure>
+<p>这样就将某一QAction与槽函数联系在一起.</p>
+<p>最后介绍QToolBar，其位置如下图所示.</p>
+<p><img data-src="20210309162438677.png" alt="image-20210309162438677" style="zoom:80%;" /></p>
+<p>其与前述内容类似，给出如下若干常用接口.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">   <span class="comment">//工具栏创建，可以有多个</span></span><br><span class="line">   QToolBar *toolBar=<span class="keyword">new</span> <span class="built_in">QToolBar</span>(<span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//将工具栏放入窗口并指定初始停靠位置</span></span><br><span class="line">   <span class="built_in">addToolBar</span>(Qt::LeftToolBarArea,toolBar);</span><br><span class="line"></span><br><span class="line"><span class="comment">//指定工具栏可以停靠的位置</span></span><br><span class="line">   toolBar-&gt;<span class="built_in">setAllowedAreas</span>(Qt::LeftToolBarArea|Qt::RightToolBarArea);</span><br><span class="line"><span class="comment">//指定工具栏是否可以浮动</span></span><br><span class="line">   toolBar-&gt;<span class="built_in">setFloatable</span>(<span class="literal">false</span>);</span><br><span class="line"><span class="comment">//指定工具栏是否可以移动</span></span><br><span class="line">   toolBar-&gt;<span class="built_in">setMovable</span>(<span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="comment">//工具栏中创建菜单项</span></span><br><span class="line">   toolBar-&gt;<span class="built_in">addAction</span>(newAction);</span><br><span class="line"><span class="comment">//添加分割线</span></span><br><span class="line">   toolBar-&gt;<span class="built_in">addSeparator</span>();</span><br><span class="line">   <span class="comment">// 工具栏中添加控件</span></span><br><span class="line">   QPushButton *btn=<span class="keyword">new</span> <span class="built_in">QPushButton</span>(<span class="string">&quot;aa&quot;</span>,<span class="keyword">this</span>);</span><br><span class="line">   toolBar-&gt;<span class="built_in">addWidget</span>(btn);</span><br></pre></td></tr></table></figure>
+<h2 id="hello代码框架的分析">Hello代码框架的分析</h2>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="type">void</span> <span class="title">MainWindow::CreatButtons</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="comment">//创建动作，标签为Hello world</span></span><br><span class="line">    <span class="comment">//&amp; 的作用:设置此动作的快捷键为标签字符串的首字母(这里是H)</span></span><br><span class="line">    hello_world_action_ = <span class="keyword">new</span> <span class="built_in">QAction</span>(<span class="built_in">tr</span>(<span class="string">&quot;&amp;Hello world&quot;</span>), <span class="keyword">this</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//使用connect函数将信号与槽连接起来</span></span><br><span class="line">    <span class="comment">//connect(信号发射方，信号，信号接收方，槽函数);</span></span><br><span class="line">    <span class="built_in">connect</span>(hello_world_action_, &amp;QAction::triggered, <span class="keyword">this</span>, &amp;MainWindow::HelloWorld);</span><br><span class="line"></span><br><span class="line">    <span class="comment">//创建菜单，标签为Main</span></span><br><span class="line">    main_menu_ = <span class="built_in">menuBar</span>()-&gt;<span class="built_in">addMenu</span>(<span class="built_in">tr</span>(<span class="string">&quot;&amp;Main&quot;</span>));</span><br><span class="line">    <span class="comment">//将动作Hello world加载到Main菜单中</span></span><br><span class="line">    main_menu_-&gt;<span class="built_in">addAction</span>(hello_world_action_);</span><br><span class="line">    </span><br><span class="line">    <span class="comment">//创建工具栏，标签为Main</span></span><br><span class="line">    main_toolbar_ = <span class="built_in">addToolBar</span>(<span class="built_in">tr</span>(<span class="string">&quot;&amp;Main&quot;</span>));</span><br><span class="line"></span><br><span class="line">    <span class="comment">//将动作hello world加载到Main工具栏中</span></span><br><span class="line">    main_toolbar_-&gt;<span class="built_in">addAction</span>(hello_world_action_);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="type">void</span> <span class="title">MainWindow::HelloWorld</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    QMessageBox::<span class="built_in">about</span>(<span class="keyword">this</span>, <span class="built_in">tr</span>(<span class="string">&quot;Hello world&quot;</span>), <span class="built_in">tr</span>(<span class="string">&quot;Well done! Go ahead.&quot;</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>分别为</p>
+<ul>
+<li>初始化动作Hello world并将其与槽函数连接.</li>
+<li>初始化菜单、工具栏.</li>
+<li>将QAction加载到各个组件中.</li>
+</ul>
+<h2 id="hello程序编译结果展示">Hello程序编译结果展示</h2>
+<p><img data-src="image-20231208155401387.png" alt="image-20231208155401387" style="zoom: 50%;" /></p>
+<p>Hello动作效果展示，这一动作可以通过菜单栏与工具栏触发.</p>
+<p><img data-src="image-20231208155446254.png" alt="image-20231208155446254" style="zoom:50%;" /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Computer-Graphics/" rel="tag"># Computer Graphics</a>
+              <a href="/tags/Qt5/" rel="tag"># Qt5</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/" rel="prev" title="GAMES101 作业3调试记录">
+      <i class="fa fa-chevron-left"></i> GAMES101 作业3调试记录
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2023/12/09/VS%E4%B8%AD%E4%BD%BF%E7%94%A8Qt-Designer%E5%BC%80%E5%8F%91/" rel="next" title="VS中使用Qt Designer开发">
+      VS中使用Qt Designer开发 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%88%A9%E7%94%A8qactionqmenuqtoolbar%E6%9E%84%E5%BB%BA%E5%BA%94%E7%94%A8%E7%A8%8B%E5%BA%8F"><span class="nav-number">1.</span> <span class="nav-text">利用QAction、QMenu、QToolBar构建应用程序</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hello%E4%BB%A3%E7%A0%81%E6%A1%86%E6%9E%B6%E7%9A%84%E5%88%86%E6%9E%90"><span class="nav-number">2.</span> <span class="nav-text">Hello代码框架的分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#hello%E7%A8%8B%E5%BA%8F%E7%BC%96%E8%AF%91%E7%BB%93%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="nav-number">3.</span> <span class="nav-text">Hello程序编译结果展示</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="hefan"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">hefan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">5</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">4</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2023</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hefan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
