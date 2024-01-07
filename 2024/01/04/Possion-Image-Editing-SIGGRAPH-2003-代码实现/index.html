@@ -41,7 +41,7 @@
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106152932634.png">
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106160046195.png">
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106192245111.png">
-<meta property="og:image" content="http://example.com/image-20240106193005669.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106193005669.png">
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107091909845.png">
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107204807420.png">
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107211707935.png">
@@ -49,7 +49,7 @@
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/GreatWhiteShark.jpg">
 <meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107211606843.png">
 <meta property="article:published_time" content="2024-01-04T13:23:39.000Z">
-<meta property="article:modified_time" content="2024-01-07T13:21:47.189Z">
+<meta property="article:modified_time" content="2024-01-07T13:38:36.909Z">
 <meta property="article:author" content="hefan">
 <meta property="article:tag" content="Computer Graphics">
 <meta name="twitter:card" content="summary">
@@ -213,7 +213,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-01-07 21:21:47" itemprop="dateModified" datetime="2024-01-07T21:21:47+08:00">2024-01-07</time>
+                <time title="Modified: 2024-01-07 21:38:36" itemprop="dateModified" datetime="2024-01-07T21:38:36+08:00">2024-01-07</time>
               </span>
 
           
@@ -328,7 +328,7 @@ Nf(x, y)-\sum_{(d x, d y)+(x, y) \in\Omega} f(x+d x, y+d y)-\sum_{((d x, d y)+(x
 <p>我们首先对变量计数，得到 serial. 其保留各个像素间的位置关系.</p>
 <p><img data-src="image-20240106192245111.png" alt="image-20240106192245111" style="zoom:50%;" /></p>
 <p>而后将每个像素临近节点序号、临近节点个数存储在 adjacent . 其中首列为临近节点个数，此后四列为临近节点序列. 若存在0，则为界点.</p>
-<p><img data-src="/image-20240106193005669.png" alt="image-20240106193005669" style="zoom: 50%;" /></p>
+<p><img data-src="image-20240106193005669.png" alt="image-20240106193005669" style="zoom: 50%;" /></p>
 <h4 id="方程组构造求解">方程组构造求解</h4>
 <p>我们需要找到一个给定点临近像素中界点的值，这可以利用存储在 adjacent 中的数据.</p>
 <p>我们使用Cholesky 分解解方程组， 求解后将结果一一对应到图像上.</p>
@@ -358,7 +358,7 @@ Nf(x, y)-\sum_{(d x, d y)+(x, y) \in\Omega} f(x+d x, y+d y)-\sum_{((d x, d y)+(x
 <p>我们再做尝试.</p>
 <p><img data-src="beach.jpg" alt="img" style="zoom: 67%;" /></p>
 <p><img data-src="GreatWhiteShark.jpg" alt="img" style="zoom:80%;" /></p>
-<p>结果如下. 还是有比较明显的边界感.</p>
+<p>结果如下. 还是有比较明显的边界感，毕竟是二十年前的算法了.</p>
 <p><img data-src="image-20240107211606843.png" alt="image-20240107211606843" style="zoom:50%;" /></p>
 
     </div>
