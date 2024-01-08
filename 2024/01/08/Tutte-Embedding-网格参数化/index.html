@@ -20,17 +20,17 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta name="description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.  findBoundary(); 输出变量 B 和 H.  B - list of boundary vertex ID&#39;s in CCW order  此处CCW order 不是是否为 ClockWise order?">
+  <meta name="description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Tutte Embedding 网格参数化">
 <meta property="og:url" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/index.html">
 <meta property="og:site_name" content="Fan&#39;s Page">
-<meta property="og:description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.  findBoundary(); 输出变量 B 和 H.  B - list of boundary vertex ID&#39;s in CCW order  此处CCW order 不是是否为 ClockWise order?">
+<meta property="og:description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.">
 <meta property="og:locale" content="en_US">
 <meta property="og:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108201317435.png">
 <meta property="og:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108225519248.png">
 <meta property="article:published_time" content="2024-01-08T12:06:07.000Z">
-<meta property="article:modified_time" content="2024-01-08T15:05:09.641Z">
+<meta property="article:modified_time" content="2024-01-08T15:15:29.378Z">
 <meta property="article:author" content="hefan">
 <meta property="article:tag" content="Computer Graphics">
 <meta property="article:tag" content="曲面参数化">
@@ -189,7 +189,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-01-08 20:06:07 / Modified: 23:05:09" itemprop="dateCreated datePublished" datetime="2024-01-08T20:06:07+08:00">2024-01-08</time>
+              <time title="Created: 2024-01-08 20:06:07 / Modified: 23:15:29" itemprop="dateCreated datePublished" datetime="2024-01-08T20:06:07+08:00">2024-01-08</time>
             </span>
 
           
@@ -211,6 +211,7 @@
 <li>drawmesh();</li>
 </ul>
 <p>三者作用均可望文生义. 关于输入输出，讨论如下.</p>
+<span id="more"></span>
 <ol type="1">
 <li><p>findBoundary();</p>
 <p>输出变量 B 和 H.</p>

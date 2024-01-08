@@ -180,7 +180,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-01-08 20:06:07 / Modified: 23:05:09" itemprop="dateCreated datePublished" datetime="2024-01-08T20:06:07+08:00">2024-01-08</time>
+              <time title="Created: 2024-01-08 20:06:07 / Modified: 23:15:29" itemprop="dateCreated datePublished" datetime="2024-01-08T20:06:07+08:00">2024-01-08</time>
             </span>
 
           
@@ -202,51 +202,14 @@
 <li>drawmesh();</li>
 </ul>
 <p>三者作用均可望文生义. 关于输入输出，讨论如下.</p>
-<ol type="1">
-<li><p>findBoundary();</p>
-<p>输出变量 B 和 H.</p>
-<blockquote>
-<p>B - list of boundary vertex ID's in CCW order</p>
-</blockquote>
-<p>此处CCW order 不是是否为 ClockWise order? 文献中算法要求Anti-clockwise order.</p>
-<p>H 未见说明，对.obj文件使用后为空.</p></li>
-<li><p>drawmesh();</p>
-<p>完全没有解释. 根据代码推断可知</p>
-<blockquote>
-<p>color: 网格面颜色.</p>
-<p>ecolor: 网格边颜色.</p>
-</blockquote>
-<p>直接尝试使用 readobj 得到的数据. 发现 t 为网格面，x 为网格顶点.</p>
-<p><img data-src="image-20240108201317435.png" alt="image-20240108201317435" style="zoom:50%;" /></p></li>
-</ol>
-<h2 id="tutte-embedding-算法实现">Tutte Embedding 算法实现</h2>
-<h3 id="算法思路">算法思路</h3>
-<p>我们首先需要将边界的顶点依照逆时针序对应到某二维图形上去. 我们先选取单位圆.</p>
-<ul>
-<li><p>需要求得每个边界顶点在此二维平面的坐标.</p></li>
-<li><p>需要知道某内部顶点的相邻顶点<span class="math inline">\(V_i\)</span>个数</p>
-<ul>
-<li>若<span class="math inline">\(V_i\)</span>为界点 -&gt; rhs - <span class="math inline">\(u_i/v_i\)</span>.</li>
-<li>若<span class="math inline">\(V_i\)</span>为内点 -&gt; 此行对应列赋为-1.</li>
-</ul></li>
-<li><p>将二维平面坐标传</p></li>
-<li><p>参给 drawmesh() 即可.</p></li>
-</ul>
-<h3 id="算法实现">算法实现</h3>
-<p>选取单位圆，我们根据角度给界点坐标赋值. 这是很方便的.</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BoundaryVertices = BoundaryVertices&#x27;;</span><br><span class="line">num = <span class="built_in">size</span>(BoundaryVertices,<span class="number">1</span>);</span><br><span class="line">unitDegree = <span class="number">2</span>*<span class="built_in">pi</span>/num;</span><br><span class="line">BoundaryVertices = [BoundaryVertices,<span class="built_in">zeros</span>(num,<span class="number">2</span>)];</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:num</span><br><span class="line">    degree = unitDegree*(<span class="built_in">i</span><span class="number">-1</span>);</span><br><span class="line">    BoundaryVertices(<span class="built_in">i</span>,<span class="number">2</span>) = <span class="built_in">cos</span>(degree);</span><br><span class="line">    BoundaryVertices(<span class="built_in">i</span>,<span class="number">3</span>) = <span class="built_in">sin</span>(degree);</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<p>给定顶点，我们需要知道其临近界点. 注意到只要同处一个面，任意两个点均是邻近的.</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">adjacentPoints</span> = <span class="title">findAdjacent</span><span class="params">(vertex, facet)</span></span></span><br><span class="line">adjacentPoints = [];</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="built_in">size</span>(facet,<span class="number">1</span>)</span><br><span class="line">    temp = facet(<span class="built_in">i</span>,:)&#x27;;</span><br><span class="line">    flag = <span class="built_in">false</span>;</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">j</span> = <span class="number">1</span>:<span class="number">3</span></span><br><span class="line">        <span class="keyword">if</span> vertex == facet(<span class="built_in">i</span>,<span class="built_in">j</span>)</span><br><span class="line">            flag = <span class="built_in">true</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">if</span> flag</span><br><span class="line">        adjacentPoints = [adjacentPoints;temp];</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    adjacentPoints = unique(adjacentPoints);</span><br><span class="line">    adjacentPoints = adjacentPoints(~<span class="built_in">ismember</span>(adjacentPoints,vertex));</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<p>注意需要除去该顶点本身.</p>
-<p>而后我们构造方程组. 这里为了方便，我们对顶点是否为界点做了标注.</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 标注是否界点</span></span><br><span class="line">vertices = [vertices,<span class="built_in">zeros</span>(<span class="built_in">size</span>(vertices,<span class="number">1</span>),<span class="number">1</span>)];</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:num</span><br><span class="line">    vertices(BoundaryVertices(<span class="built_in">i</span>,<span class="number">1</span>),<span class="number">4</span>) = <span class="built_in">nan</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">num = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="built_in">size</span>(vertices,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> ~<span class="built_in">isnan</span>(vertices(<span class="built_in">i</span>,<span class="number">4</span>))</span><br><span class="line">        num = num+<span class="number">1</span>;</span><br><span class="line">        vertices(<span class="built_in">i</span>,<span class="number">4</span>) = num;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
-<p>同时，对内点进行了编号以便索引. 分别对俩个维度的坐标求解后，将坐标替换成方程组的解.</p>
-<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 查找给定顶点的邻近顶点</span></span><br><span class="line"><span class="comment">% 二维坐标</span></span><br><span class="line"><span class="keyword">for</span> corrdinate = <span class="number">1</span>:<span class="number">2</span></span><br><span class="line">    coef = <span class="built_in">zeros</span>(num,num);</span><br><span class="line">    rhs = <span class="built_in">zeros</span>(num,<span class="number">1</span>);</span><br><span class="line">    <span class="comment">% 第 i 个内点</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:num</span><br><span class="line">        <span class="comment">% 查找第i个内点对应序列号</span></span><br><span class="line">        [cols,~] = <span class="built_in">find</span>(vertices(:,<span class="number">4</span>)==<span class="built_in">i</span>);</span><br><span class="line">        adjacentPoints = findAdjacent(cols, facet);</span><br><span class="line">        adjaNum = <span class="built_in">size</span>(adjacentPoints,<span class="number">1</span>);</span><br><span class="line">        coef(<span class="built_in">i</span>,<span class="built_in">i</span>) = adjaNum;</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span> = <span class="number">1</span>:adjaNum</span><br><span class="line">            orderNum = adjacentPoints(<span class="built_in">j</span>,<span class="number">1</span>);</span><br><span class="line">            <span class="comment">% 查找内点序号</span></span><br><span class="line">            interiorNum = vertices(orderNum,<span class="number">4</span>);</span><br><span class="line">            <span class="comment">% 若为界点</span></span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">isnan</span>(interiorNum)</span><br><span class="line">                [cols,~] = <span class="built_in">find</span>(BoundaryVertices(:,<span class="number">1</span>)==orderNum);</span><br><span class="line">                rhs(<span class="built_in">i</span>) = rhs(<span class="built_in">i</span>)+BoundaryVertices(cols,corrdinate+<span class="number">1</span>);</span><br><span class="line">            <span class="comment">% 内点</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                coef(<span class="built_in">i</span>,interiorNum) = <span class="number">-1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="comment">% 求解</span></span><br><span class="line">    R = chol(coef);</span><br><span class="line">    x = R\(R&#x27;\rhs);</span><br><span class="line">    <span class="comment">% 赋值</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="built_in">size</span>(vertices,<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> ~<span class="built_in">isnan</span>(vertices(<span class="built_in">i</span>,<span class="number">4</span>))</span><br><span class="line">            vertices(<span class="built_in">i</span>,corrdinate) = x(vertices(<span class="built_in">i</span>,<span class="number">4</span>),<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            [cols,~] = <span class="built_in">find</span>(BoundaryVertices(:,<span class="number">1</span>)==<span class="built_in">i</span>);</span><br><span class="line">            vertices(<span class="built_in">i</span>,corrdinate) = BoundaryVertices(cols,corrdinate+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">vertices = vertices(:,<span class="number">1</span>:<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
-<p>这就完成了算法.</p>
-<h2 id="结果">结果</h2>
-<p>结果展示如下.</p>
-<p><img data-src="image-20240108225519248.png" alt="image-20240108225519248" style="zoom:50%;" /></p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
