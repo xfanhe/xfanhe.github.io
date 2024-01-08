@@ -20,28 +20,37 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Fan&#39;s Page">
-<meta property="og:url" content="http://example.com/index.html">
+  <meta name="description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.  findBoundary(); 输出变量 B 和 H.  B - list of boundary vertex ID&#39;s in CCW order  此处CCW order 不是是否为 ClockWise order?">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tutte Embedding 网格参数化">
+<meta property="og:url" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/index.html">
 <meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.  findBoundary(); 输出变量 B 和 H.  B - list of boundary vertex ID&#39;s in CCW order  此处CCW order 不是是否为 ClockWise order?">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108201317435.png">
+<meta property="og:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108225519248.png">
+<meta property="article:published_time" content="2024-01-08T12:06:07.000Z">
+<meta property="article:modified_time" content="2024-01-08T15:05:09.641Z">
 <meta property="article:author" content="hefan">
+<meta property="article:tag" content="Computer Graphics">
+<meta property="article:tag" content="曲面参数化">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108201317435.png">
 
-<link rel="canonical" href="http://example.com/">
+<link rel="canonical" href="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/">
 
 
 <script id="page-configurations">
   // https://hexo.io/docs/variables.html
   CONFIG.page = {
     sidebar: "",
-    isHome : true,
-    isPost : false,
+    isHome : false,
+    isPost : true,
     lang   : 'en'
   };
 </script>
 
-  <title>Fan's Page</title>
+  <title>Tutte Embedding 网格参数化 | Fan's Page</title>
   
 
 
@@ -149,9 +158,10 @@
         <div class="content-wrap">
           
 
-          <div class="content index posts-expand">
+          <div class="content post posts-expand">
             
-      
+
+    
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
@@ -167,10 +177,9 @@
       <meta itemprop="name" content="Fan's Page">
     </span>
       <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/" class="post-title-link" itemprop="url">Tutte Embedding 网格参数化</a>
-        </h2>
+        <h1 class="post-title" itemprop="name headline">
+          Tutte Embedding 网格参数化
+        </h1>
 
         <div class="post-meta">
             <span class="post-meta-item">
@@ -194,7 +203,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-          <h2 id="框架分析">框架分析</h2>
+        <h2 id="框架分析">框架分析</h2>
 <p>有函数</p>
 <ul>
 <li>readObj();</li>
@@ -247,526 +256,34 @@
 <p>结果展示如下.</p>
 <p><img data-src="image-20240108225519248.png" alt="image-20240108225519248" style="zoom:50%;" /></p>
 
-      
     </div>
 
     
     
     
+
       <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
+          <div class="post-tags">
+              <a href="/tags/Computer-Graphics/" rel="tag"># Computer Graphics</a>
+              <a href="/tags/%E6%9B%B2%E9%9D%A2%E5%8F%82%E6%95%B0%E5%8C%96/" rel="tag"># 曲面参数化</a>
+          </div>
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">Possion Image Editing SIGGRAPH 2003 代码实现</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2024-01-04 21:23:39" itemprop="dateCreated datePublished" datetime="2024-01-04T21:23:39+08:00">2024-01-04</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-01-07 21:50:50" itemprop="dateModified" datetime="2024-01-07T21:50:50+08:00">2024-01-07</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>文献：lPérez P, Gangnet M, Blake A. Poisson image editing[M]//ACM SIGGRAPH 2003 Papers. 2003: 313-318.
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
-    </div>
 
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/11/CMake/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/12/11/CMake/" class="post-title-link" itemprop="url">CMake</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-12-11 09:51:40 / Modified: 10:44:05" itemprop="dateCreated datePublished" datetime="2023-12-11T09:51:40+08:00">2023-12-11</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          
-
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/09/VS%E4%B8%AD%E4%BD%BF%E7%94%A8Qt-Designer%E5%BC%80%E5%8F%91/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/12/09/VS%E4%B8%AD%E4%BD%BF%E7%94%A8Qt-Designer%E5%BC%80%E5%8F%91/" class="post-title-link" itemprop="url">VS中使用Qt Designer开发</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-12-09 15:09:00" itemprop="dateCreated datePublished" datetime="2023-12-09T15:09:00+08:00">2023-12-09</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-12-10 12:22:36" itemprop="dateModified" datetime="2023-12-10T12:22:36+08:00">2023-12-10</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>Visual Studio QT <a target="_blank" rel="noopener" href="https://doc.qt.io/qtvstools-2/qtvstools-qt-widgets-application.html#open-dialogs-from-the-main-window">Tutorial: Qt Widgets Application</a> 学习记录. 主要讲解通过Qt Designer生成.ui文件, 在VS环境下开发.</p>
-<p>环境配置如下.</p>
-<ul>
-<li>VS 2022</li>
-<li>Qt 5.12.12</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/12/09/VS%E4%B8%AD%E4%BD%BF%E7%94%A8Qt-Designer%E5%BC%80%E5%8F%91/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
         
-      
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" rel="prev" title="Possion Image Editing SIGGRAPH 2003 代码实现">
+      <i class="fa fa-chevron-left"></i> Possion Image Editing SIGGRAPH 2003 代码实现
+    </a></div>
+      <div class="post-nav-item"></div>
     </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
       </footer>
+    
   </article>
   
   
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/" class="post-title-link" itemprop="url">CG报告01 Qt初步</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-              
-
-              <time title="Created: 2023-12-08 20:59:47 / Modified: 21:26:06" itemprop="dateCreated datePublished" datetime="2023-12-08T20:59:47+08:00">2023-12-08</time>
-            </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>主要参考材料为</p>
-<ul>
-<li><a target="_blank" rel="noopener" href="https://wiki.qt.io/">Qt官方文档</a>.</li>
-<li><a target="_blank" rel="noopener" href="https://doc.qt.io/qtvstools/index.html">Qt VS开发手册</a>.</li>
-</ul>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/12/08/CG%E6%8A%A5%E5%91%8A01-Qt%E5%88%9D%E6%AD%A5/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">GAMES101 作业3调试记录</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-11-26 09:59:22" itemprop="dateCreated datePublished" datetime="2023-11-26T09:59:22+08:00">2023-11-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-12-11 17:28:38" itemprop="dateModified" datetime="2023-12-11T17:28:38+08:00">2023-12-11</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="normal-shader-效果调试">Normal Shader 效果调试</h2>
-<p>遇到许多问题, 包括但不限于文件导入错误、图像全黑、黑点、颠倒.</p>
-<h3 id="三角形光栅化">三角形光栅化</h3>
-<p>作业三的框架修改了很多, 列举部分如下.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/" class="post-title-link" itemprop="url">在Python中使用Epoll通信</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-11-19 12:23:25" itemprop="dateCreated datePublished" datetime="2023-11-19T12:23:25+08:00">2023-11-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-11-26 11:33:12" itemprop="dateModified" datetime="2023-11-26T11:33:12+08:00">2023-11-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>我们已经了解过利用<code>select()</code>实现异步非阻塞通信，该实现方式有如下缺陷。</p>
-<ul>
-<li>执行<code>select()</code>过程中需要对监视套接字不停轮询。</li>
-<li>调用<code>select()</code>时需要向其传递监视套接字信息。</li>
-</ul>
-<p>后者带来的开销是巨大的，因为文件描述符是由OS管理的。这意味着我们的进程需要向操作系统传递数据。这一缺陷可以这样改进：</p>
-<blockquote>
-<p>仅向OS传递一次监视套接字信息，此后仅在发生变化时通知OS。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/11/18/Build-a-VPN-from-scratch/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/11/18/Build-a-VPN-from-scratch/" class="post-title-link" itemprop="url">Build a VPN from scratch</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-11-18 23:21:36" itemprop="dateCreated datePublished" datetime="2023-11-18T23:21:36+08:00">2023-11-18</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-11-19 18:44:51" itemprop="dateModified" datetime="2023-11-19T18:44:51+08:00">2023-11-19</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>在docker虚拟网络中使用TUN建立的简易VPN. 通信用户可以通过界面进行基本的配置, 可以设定加解密模式. 项目结果请见效果演示.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/11/18/Build-a-VPN-from-scratch/">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
-
   
 
 
@@ -819,6 +336,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">框架分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tutte-embedding-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">Tutte Embedding 算法实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%80%9D%E8%B7%AF"><span class="nav-number">2.1.</span> <span class="nav-text">算法思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">算法实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">3.</span> <span class="nav-text">结果</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
