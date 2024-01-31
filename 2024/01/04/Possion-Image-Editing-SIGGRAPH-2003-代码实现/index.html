@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon_1.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32_1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16_1.png">
+  <link rel="mask-icon" href="/images/android-chrome-512x512_1.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="文献：lPérez P, Gangnet M, Blake A. Poisson image editing[M]&#x2F;&#x2F;ACM SIGGRAPH 2003 Papers. 2003: 313-318.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Possion Image Editing SIGGRAPH 2003 代码实现">
+<meta property="og:url" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/index.html">
+<meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="文献：lPérez P, Gangnet M, Blake A. Poisson image editing[M]&#x2F;&#x2F;ACM SIGGRAPH 2003 Papers. 2003: 313-318.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240104213829223.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/imageAimageB.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240104233557431.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240104234531346.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240105095559320.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240105141251581.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/1615521522-dPyxZU-image.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106142934206.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106144441544.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106104011671.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106151622919.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106152932634.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106160046195.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106192245111.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240106193005669.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107091909845.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107204807420.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107211707935.png">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/beach.jpg">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/GreatWhiteShark.jpg">
+<meta property="og:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240107211606843.png">
+<meta property="article:published_time" content="2024-01-04T13:23:39.000Z">
+<meta property="article:modified_time" content="2024-01-07T13:50:50.622Z">
+<meta property="article:author" content="hefan">
+<meta property="article:tag" content="Computer Graphics">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/image-20240104213829223.png">
+
+<link rel="canonical" href="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Possion Image Editing SIGGRAPH 2003 代码实现 | Fan's Page</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fan's Page</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Possion Image Editing SIGGRAPH 2003 代码实现
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-01-04 21:23:39" itemprop="dateCreated datePublished" datetime="2024-01-04T21:23:39+08:00">2024-01-04</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-01-07 21:50:50" itemprop="dateModified" datetime="2024-01-07T21:50:50+08:00">2024-01-07</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>文献：lPérez P, Gangnet M, Blake A. Poisson image editing[M]//ACM SIGGRAPH 2003 Papers. 2003: 313-318. <span id="more"></span></p>
+<h2 id="框架分析">框架分析</h2>
+<p>代码框架基于MATLAB，实现了GUI界面选取图像区域，我们需要实现的函数为</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">imret</span> = <span class="title">blendImagePoisson</span><span class="params">(im1, im2, roi, targetPosition)</span></span></span><br><span class="line"><span class="comment">% TODO...</span></span><br><span class="line">imret = <span class="number">255</span>-im1;</span><br></pre></td></tr></table></figure>
+<p>我们先观察框架，函数的参数含义如下.</p>
+<ol type="1">
+<li><p>im1、im2.</p>
+<p>系图像输入，为335x467x3数值矩阵格式. 分别为background 和 foreground.</p></li>
+<li><p>roi.</p>
+<p>观察该参数初始化语句</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">roi = hpolys(<span class="number">1</span>).Position();</span><br></pre></td></tr></table></figure>
+<p>运行代码查看变量，如下图所示.</p>
+<p><img data-src="image-20240104213829223.png" alt="image-20240104213829223" style="zoom:50%;" /></p>
+<p>应为选取图像区域的多边形控制点坐标.</p></li>
+<li><p>targetPosition.</p>
+<p>观察参量初始化语句.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">targetPosition = roi + <span class="built_in">ceil</span>(hpolys(<span class="number">2</span>).Position - roi);</span><br></pre></td></tr></table></figure>
+<p>感觉写法略显奇怪？其应为目标区域的顶点坐标. 这里的向下取整操作似乎是为方便后续操作，我们先不细究.</p></li>
+</ol>
+<h2 id="算法原理简述">算法原理简述</h2>
+<p>如何实现自然的图像融合？我们试图将<span class="math inline">\(B\)</span>融合到<span class="math inline">\(A\)</span>，令生成图像为从<span class="math inline">\(\partial B\)</span>上基于B的梯度“生长”出新的融合图像<span class="math inline">\(f\)</span>.</p>
+<p><img data-src="imageAimageB.png" alt="img" style="zoom: 150%;" /></p>
+<p>数学上来讲，边值条件为 <span class="math display">\[
+f_{(x, y)}=A_{(x, y)} \quad \forall(x, y) \in \partial \Omega.
+\]</span> 此外，为了使生成图像<span class="math inline">\(f\)</span>符合<span class="math inline">\(B\)</span>的梯度信息，我们有 <span class="math display">\[
+\Delta f_{(x,y)} = div\ v_{(x,y)}\quad \forall (x,y)\in \Omega,
+\]</span> 其中<span class="math inline">\(v_{(x,y)}\)</span>是<span class="math inline">\(B\)</span>的梯度函数. 上式是变分问题 <span class="math display">\[
+\min_{f}\iint_{B}|\nabla f_{(x,y)}-v_{(x,y)}|,\\
+f_{(x, y)}=A_{(x, y)} \quad \forall(x, y) \in \partial \Omega.
+\]</span> 的等价问题. 我们只需使用数值PDE方法求解即可. 其差分格式如下. <span class="math display">\[
+Nf(x, y)-\sum_{(d x, d y)+(x, y) \in\Omega} f(x+d x, y+d y)-\sum_{((d x, d y)+(x, y) \in \partial \Omega} A(x+d x, y+d y)\\=\sum_{(d x, d y)+(x, y) \in(\Omega \cup \partial \Omega)}(B(x+d x, y+d y)-B(x, y))
+\]</span> 这会产生典型的稀疏带状矩阵，我们有许多算法来求解.</p>
+<h2 id="算法实现">算法实现</h2>
+<h3 id="判断指定像素是否属于多边形范围">判断指定像素是否属于多边形范围</h3>
+<p>需要注意的是，代码框架中给出的两个图片大小并不一致.</p>
+<p><img data-src="image-20240104233557431.png" alt="image-20240104233557431" style="zoom:50%;" /></p>
+<p>我们首先要搞清楚参数roi是如何定义的，查阅该函数索引.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hp1 = drawpolygon(subplot(<span class="number">121</span>));</span><br></pre></td></tr></table></figure>
+<p><img data-src="image-20240104234531346.png" alt="image-20240104234531346" style="zoom: 50%;" /></p>
+<p>不太清晰，我们实验一下. 可以看到坐标是基于图像左上顶点定义的.</p>
+<p><img data-src="image-20240105095559320.png" alt="image-20240105095559320" style="zoom: 50%;" /></p>
+<p>若顶点坐标为逆时针存储，我们可以使用叉乘判断. 实验发现，是按照输入顺序存储的. 因此无法确定为顺时针或逆时针序，需要我们做一定调整.</p>
+<p>观察多边形产生的交互动画，可以看到是通过首个顶点与上个顶点与当前点做三角形实现扩充的. 这样输入的多边形并不保证为凸多边形，具有很强的灵活性.</p>
+<p><img data-src="image-20240105141251581.png" alt="image-20240105141251581" style="zoom:50%;" /></p>
+<p>我们先实现一个判断点是否在三角形内部的函数.</p>
+<h4 id="调整三角形顶点为逆时针序">调整三角形顶点为逆时针序</h4>
+<p>思路如图所示，注意向量叉乘<span class="math inline">\(p_1p_2\times p_1p_3\)</span>若为正数，则说明两向量逆时针方向夹角小于<span class="math inline">\(\pi\)</span>. 即<span class="math inline">\(p_3\)</span>位于<span class="math inline">\(p_1p_2\)</span>的左侧，此时为逆时针方向.</p>
+<p><img data-src="1615521522-dPyxZU-image.png" alt="image.png" style="zoom:67%;" /></p>
+<p>MATLAB内置cross()不支持二维向量叉乘，我们实现如下.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">res</span> = <span class="title">product</span><span class="params">(vertexes)</span></span></span><br><span class="line">OneTwo = vertexes(<span class="number">2</span>,:)-vertexes(<span class="number">1</span>,:);</span><br><span class="line">OneThree = vertexes(<span class="number">3</span>,:)-vertexes(<span class="number">1</span>,:);</span><br><span class="line">res = OneTwo(<span class="number">1</span>,<span class="number">1</span>)*OneThree(<span class="number">1</span>,<span class="number">2</span>) - OneThree(<span class="number">1</span>,<span class="number">1</span>)*OneTwo(<span class="number">1</span>,<span class="number">2</span>);</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>而后调整顶点顺序.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 调整三角形顶点顺序为逆时针</span></span><br><span class="line"><span class="keyword">if</span> product(vertexes) &lt; <span class="number">0</span></span><br><span class="line">    vertexes = [vertexes(<span class="number">1</span>,:);vertexes(<span class="number">3</span>,:);vertexes(<span class="number">2</span>,:)];</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h4 id="求得三角形内部点集">求得三角形内部点集</h4>
+<p>实现判断单个点是否在三角形内部的函数如下.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">res</span> = <span class="title">insideTriangle</span><span class="params">(vertexes, point)</span></span></span><br><span class="line">res = <span class="built_in">false</span>;</span><br><span class="line"><span class="comment">% 调整三角形顶点顺序为逆时针</span></span><br><span class="line"><span class="comment">% code...</span></span><br><span class="line"><span class="comment">% 判断是否在三角形内部</span></span><br><span class="line"><span class="keyword">if</span> product([vertexes(<span class="number">1</span>:<span class="number">2</span>,:);point]) &amp;&amp; product([vertexes(<span class="number">2</span>:<span class="number">3</span>,:);point]) ...</span><br><span class="line">        &amp;&amp; product([vertexes([<span class="number">3</span>,<span class="number">1</span>],:);point]) &gt; <span class="number">0</span></span><br><span class="line">    res = <span class="built_in">true</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<h4 id="求得控制多边形内部像素点">求得控制多边形内部像素点</h4>
+<p>整体调试代码，发现问题. MATLAB中矩阵不能这样索引.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">matrix([<span class="built_in">i</span>,<span class="built_in">j</span>]) = <span class="number">10</span>;</span><br></pre></td></tr></table></figure>
+<p>这并不意味着第 i 行第 j 列元素. 调试后程序结果依旧不对，判断三角形内部的代码有问题.</p>
+<p>发现了问题，多边形绘制时是每两个顶点与首个顶点连线形成三角形绘制而成的. 在代码实现中变成了每三个相邻顶点连线的三角形.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% step 01: get points inside polygon defined by vertexes.</span></span><br><span class="line"><span class="comment">% 确定包围盒</span></span><br><span class="line">MinRoi = <span class="built_in">ceil</span>(<span class="built_in">min</span>(roi));</span><br><span class="line">MaxRoi = <span class="built_in">ceil</span>(<span class="built_in">max</span>(roi));</span><br><span class="line"><span class="comment">% 由于边界不规则，以二维表形式存储融合区域坐标</span></span><br><span class="line">data = <span class="built_in">zeros</span>((MaxRoi-MinRoi+[<span class="number">1</span>,<span class="number">1</span>]));</span><br><span class="line">pointNum = <span class="built_in">size</span>(roi,<span class="number">1</span>);</span><br><span class="line"><span class="comment">% 遍历点集</span></span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = MinRoi(<span class="number">1</span>,<span class="number">1</span>):MaxRoi(<span class="number">1</span>,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">j</span> = MinRoi(<span class="number">1</span>,<span class="number">2</span>):MaxRoi(<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line">        <span class="comment">% 对点(i,j),遍历所有三角形</span></span><br><span class="line">        <span class="keyword">for</span> index = <span class="number">2</span>:(pointNum - <span class="number">1</span>)</span><br><span class="line">            vertexes = [roi(<span class="number">1</span>,:);roi(index:index+<span class="number">1</span>,:)];</span><br><span class="line">            MinVertex = <span class="built_in">ceil</span>(<span class="built_in">min</span>(vertexes));</span><br><span class="line">            MaxVertex = <span class="built_in">ceil</span>(<span class="built_in">max</span>(vertexes));</span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">i</span> &lt; MinVertex(<span class="number">1</span>,<span class="number">1</span>)||<span class="built_in">i</span>&gt;MaxVertex(<span class="number">1</span>,<span class="number">1</span>)||<span class="built_in">j</span>&lt;MinVertex(<span class="number">1</span>,<span class="number">2</span>)||<span class="built_in">j</span>&gt;MaxVertex(<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line">                <span class="keyword">continue</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">if</span> insideTriangle(vertexes,[<span class="built_in">i</span>,<span class="built_in">j</span>])</span><br><span class="line">                location = [<span class="built_in">i</span>,<span class="built_in">j</span>]-MinRoi+[<span class="number">1</span>,<span class="number">1</span>];</span><br><span class="line">                data(location(<span class="number">1</span>,<span class="number">1</span>),location(<span class="number">1</span>,<span class="number">2</span>)) = im1(<span class="built_in">i</span>,<span class="built_in">j</span>,<span class="number">1</span>);</span><br><span class="line">                <span class="keyword">break</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>这样就得到了数据 data，它是一个包含选取多边形的矩形区域. 在多边形内的坐标点数据为图像值，不然为0.</p>
+<h4 id="代码重构">代码重构</h4>
+<p>我们需要对每个图像的三个图层（RGB）以及两个图像的选中区域均实现前述算法，我们将其重构为函数实现复用.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">data</span> = <span class="title">insideHpolygon</span><span class="params">(roi,image)</span></span></span><br><span class="line"><span class="comment">% 确定包围盒</span></span><br><span class="line">MinRoi = <span class="built_in">floor</span>(<span class="built_in">min</span>(roi));</span><br><span class="line">MaxRoi = <span class="built_in">ceil</span>(<span class="built_in">max</span>(roi));</span><br><span class="line"><span class="comment">% 由于边界不规则，以二维表形式存储融合区域坐标</span></span><br><span class="line">data = <span class="built_in">zeros</span>([MaxRoi-MinRoi+[<span class="number">1</span>,<span class="number">1</span>],<span class="number">3</span>]);</span><br><span class="line">pointNum = <span class="built_in">size</span>(roi,<span class="number">1</span>);</span><br><span class="line"><span class="comment">% 遍历图层</span></span><br><span class="line"><span class="keyword">for</span> layer = <span class="number">1</span>:<span class="number">3</span></span><br><span class="line">    <span class="comment">% 遍历点集</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span> = MinRoi(<span class="number">1</span>,<span class="number">1</span>):MaxRoi(<span class="number">1</span>,<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span> = MinRoi(<span class="number">1</span>,<span class="number">2</span>):MaxRoi(<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line">            <span class="comment">% 对点(i,j),遍历所有三角形</span></span><br><span class="line">            <span class="keyword">for</span> index = <span class="number">2</span>:(pointNum - <span class="number">1</span>)</span><br><span class="line">                vertexes = [roi(<span class="number">1</span>,:);roi(index:index+<span class="number">1</span>,:)];</span><br><span class="line">                MinVertex = <span class="built_in">ceil</span>(<span class="built_in">min</span>(vertexes));</span><br><span class="line">                MaxVertex = <span class="built_in">ceil</span>(<span class="built_in">max</span>(vertexes));</span><br><span class="line">                <span class="keyword">if</span> <span class="built_in">i</span> &lt; MinVertex(<span class="number">1</span>,<span class="number">1</span>)||<span class="built_in">i</span>&gt;MaxVertex(<span class="number">1</span>,<span class="number">1</span>)||<span class="built_in">j</span>&lt;MinVertex(<span class="number">1</span>,<span class="number">2</span>)||<span class="built_in">j</span>&gt;MaxVertex(<span class="number">1</span>,<span class="number">2</span>)</span><br><span class="line">                    <span class="keyword">continue</span>;</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">                <span class="keyword">if</span> insideTriangle(vertexes,[<span class="built_in">i</span>,<span class="built_in">j</span>])</span><br><span class="line">                    location = [<span class="built_in">i</span>,<span class="built_in">j</span>]-MinRoi+[<span class="number">1</span>,<span class="number">1</span>];</span><br><span class="line">                    data(location(<span class="number">1</span>,<span class="number">1</span>),location(<span class="number">1</span>,<span class="number">2</span>),layer) = image(<span class="built_in">i</span>,<span class="built_in">j</span>,layer);</span><br><span class="line">                    <span class="keyword">break</span>;</span><br><span class="line">                <span class="keyword">end</span></span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>我们观察这样构建的图像，只有黑白. 这是因为我们的数值矩阵是double类型，matlab的图像格式中double需要处于0~1之间，超出均为白色.</p>
+<p><img data-src="image-20240106142934206.png" alt="image-20240106142934206" style="zoom:50%;" /></p>
+<p>将其映射至给定区间即可.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">imshow(data/<span class="number">256</span>)</span><br></pre></td></tr></table></figure>
+<p>但是这是显示的结果并非我们选中部分.</p>
+<p><img data-src="image-20240106144441544.png" alt="image-20240106144441544" style="zoom:50%;" /></p>
+<p>这是因为，roi的第一列为 x 轴坐标，对应矩阵应为列.</p>
+<p><img data-src="image-20240106104011671.png" alt="image-20240106104011671" style="zoom:67%;" /></p>
+<p>我们将 i ，j 对调. 效果依旧不对.</p>
+<p>观察代码框架. 左图为 im2，右图为 im1.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">figure</span>(<span class="string">&#x27;Units&#x27;</span>, <span class="string">&#x27;pixel&#x27;</span>, <span class="string">&#x27;Position&#x27;</span>, [<span class="number">100</span>,<span class="number">100</span>,<span class="number">1000</span>,<span class="number">700</span>], <span class="string">&#x27;toolbar&#x27;</span>, <span class="string">&#x27;none&#x27;</span>);</span><br><span class="line">subplot(<span class="number">121</span>);</span><br><span class="line">imshow(im2);</span><br><span class="line">title(&#123;<span class="string">&#x27;Foreground&#x27;</span>, <span class="string">&#x27;press red tool button to mark polygon as copying region&#x27;</span>&#125;);</span><br><span class="line">subplot(<span class="number">122</span>);</span><br><span class="line">himg = imshow(im1);</span><br><span class="line">title(&#123;<span class="string">&#x27;Background&#x27;</span>, <span class="string">&#x27;press blue tool button to compute blended image&#x27;</span>&#125;);</span><br></pre></td></tr></table></figure>
+<p>多边形顶点信息 hp1 对应 im2，hp2对应 im1. 从而 roi 对应 im2，targetPosition 对应 im1.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">hp1 = drawpolygon(subplot(<span class="number">121</span>));</span><br><span class="line">hp1.set(<span class="string">&#x27;InteractionsAllowed&#x27;</span>, <span class="string">&#x27;translate&#x27;</span>);</span><br><span class="line">hp2 = drawpolygon(subplot(<span class="number">122</span>), <span class="string">&#x27;position&#x27;</span>, hp1.Position);</span><br><span class="line">hp2.set(<span class="string">&#x27;InteractionsAllowed&#x27;</span>, <span class="string">&#x27;translate&#x27;</span>);</span><br></pre></td></tr></table></figure>
+<p>因此应为</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">data = insideHpolygon(roi,im2);</span><br><span class="line">subplot(<span class="number">122</span>);</span><br><span class="line">imshow(data/<span class="number">256</span>)</span><br></pre></td></tr></table></figure>
+<p>效果如图. 简单的将 i，j 对调依旧存在问题，我们需要将 data 整个转置.</p>
+<figure>
+<img data-src="image-20240106151622919.png" alt="image-20240106151622919" /><figcaption aria-hidden="true">image-20240106151622919</figcaption>
+</figure>
+<p>还是存在问题. 是否是因为我们设定的判断函数判断时所使用的坐标依旧是原坐标？</p>
+<p><img data-src="image-20240106152932634.png" alt="image-20240106152932634" style="zoom:50%;" /></p>
+<p>果然，我们直接对原有原点做对换后得到理想结果.</p>
+<p><img data-src="image-20240106160046195.png" alt="image-20240106160046195" style="zoom:50%;" /></p>
+<h3 id="构造求解方程组">构造求解方程组</h3>
+<p>我们已知离散方程. <span class="math display">\[
+Nf(x, y)-\sum_{(d x, d y)+(x, y) \in\Omega} f(x+d x, y+d y)-\sum_{((d x, d y)+(x, y) \in \partial \Omega} A(x+d x, y+d y)\\=\sum_{(d x, d y)+(x, y) \in(\Omega \cup \partial \Omega)}(B(x+d x, y+d y)-B(x, y))
+\]</span> 注意到图像本身存在一些黑色点. 为了避免不在范围内（0）与像素色为0 混淆，我们设置不在范围内像素值为256*2.</p>
+<p>构造系数矩阵，我们首先需要知道多边形内部的像素的个数. 我们可以对前述代码稍作修改得到.</p>
+<p>对于某一像素点，我们需要知道</p>
+<ul>
+<li>其本身以及临近像素点的序号.</li>
+<li>其本身是否为节点. 以及临近像素点是否在范围内，是否为界点. 在范围内的个数.</li>
+</ul>
+<h4 id="数据准备">数据准备</h4>
+<p>我们首先对变量计数，得到 serial. 其保留各个像素间的位置关系.</p>
+<p><img data-src="image-20240106192245111.png" alt="image-20240106192245111" style="zoom:50%;" /></p>
+<p>而后将每个像素临近节点序号、临近节点个数存储在 adjacent . 其中首列为临近节点个数，此后四列为临近节点序列. 若存在0，则为界点.</p>
+<p><img data-src="image-20240106193005669.png" alt="image-20240106193005669" style="zoom: 50%;" /></p>
+<h4 id="方程组构造求解">方程组构造求解</h4>
+<p>我们需要找到一个给定点临近像素中界点的值，这可以利用存储在 adjacent 中的数据.</p>
+<p>我们使用Cholesky 分解解方程组， 求解后将结果一一对应到图像上.</p>
+<p>求解结果如下，存在问题.</p>
+<p><img data-src="image-20240107091909845.png" alt="image-20240107091909845" style="zoom:50%;" /></p>
+<p>检查方程组，问题过多不便分析效果. 一并列举如下.</p>
+<ol type="1">
+<li><p>文献中界点并不属于选定范围，只要是选定范围内点均为内点.</p>
+<blockquote>
+<p>The boundary of Ω is now <span class="math inline">\(\partial \Omega=\left\{p \in S \backslash \Omega: N_p \cap \Omega \neq \emptyset\right\}\)</span>.</p>
+</blockquote>
+<p>我们调整 adjacent ，在其后附上四列以存储临近界点的坐标.</p></li>
+<li><p>检查Rhs发现A、B中根本没有储存像素值，需要重新构造右端项.</p></li>
+<li><p>发现方程组中<span class="math inline">\(|N_p|\)</span> 的理解有偏差. 不是范围内点，而是图片内的点.</p>
+<blockquote>
+<p>When Ω contains pixels on the border of S, which happens for instance when <span class="math inline">\(\Omega\)</span> extends to the edge of the pixel grid, these pixels have a truncated neighborhood such that <span class="math inline">\(|N_p|&lt;4\)</span>.</p>
+</blockquote></li>
+<li><p>像素值数据类型为uint8，最大存储到256. 数据溢出给右端项带来麻烦.</p>
+<p><figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">img = imread(<span class="string">&#x27;./1.jpg&#x27;</span>); <span class="comment">% 读入是unit8型(0~255)数据</span></span><br><span class="line">I1  = im2double(img);    <span class="comment">% 把图像转换成double精度类型（0~1）</span></span><br><span class="line">I2  = double(img)/<span class="number">255</span>;   <span class="comment">% uint8转换成double,作用同im2double</span></span><br></pre></td></tr></table></figure></p></li>
+</ol>
+<p>以上问题解决后，效果依旧不理想. 原图的色彩信息完全丢失了.</p>
+<p><img data-src="image-20240107204807420.png" alt="image-20240107204807420" style="zoom:50%;" /></p>
+<p>发先了问题，右端项的正负号反了. <a target="_blank" rel="noopener" href="https://www.ctralie.com/Teaching/PoissonImageEditing/">ctralie</a> 的教程中此处刚好写反了，注意到后与文献核对，果然如此.</p>
+<h4 id="效果展示">效果展示</h4>
+<p>历时两天半，效果如图.</p>
+<p><img data-src="image-20240107211707935.png" alt="image-20240107211707935" style="zoom: 50%;" /></p>
+<p>我们再做尝试.</p>
+<p><img data-src="beach.jpg" alt="img" style="zoom: 67%;" /></p>
+<p><img data-src="GreatWhiteShark.jpg" alt="img" style="zoom:80%;" /></p>
+<p>结果如下. 还是有比较明显的边界感，毕竟是二十年前的算法了.</p>
+<p><img data-src="image-20240107211606843.png" alt="image-20240107211606843" style="zoom:50%;" /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Computer-Graphics/" rel="tag"># Computer Graphics</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2023/12/11/CMake/" rel="prev" title="CMake">
+      <i class="fa fa-chevron-left"></i> CMake
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/" rel="next" title="Tutte Embedding 网格参数化">
+      Tutte Embedding 网格参数化 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">框架分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%8E%9F%E7%90%86%E7%AE%80%E8%BF%B0"><span class="nav-number">2.</span> <span class="nav-text">算法原理简述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">3.</span> <span class="nav-text">算法实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%A4%E6%96%AD%E6%8C%87%E5%AE%9A%E5%83%8F%E7%B4%A0%E6%98%AF%E5%90%A6%E5%B1%9E%E4%BA%8E%E5%A4%9A%E8%BE%B9%E5%BD%A2%E8%8C%83%E5%9B%B4"><span class="nav-number">3.1.</span> <span class="nav-text">判断指定像素是否属于多边形范围</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%B0%83%E6%95%B4%E4%B8%89%E8%A7%92%E5%BD%A2%E9%A1%B6%E7%82%B9%E4%B8%BA%E9%80%86%E6%97%B6%E9%92%88%E5%BA%8F"><span class="nav-number">3.1.1.</span> <span class="nav-text">调整三角形顶点为逆时针序</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B1%82%E5%BE%97%E4%B8%89%E8%A7%92%E5%BD%A2%E5%86%85%E9%83%A8%E7%82%B9%E9%9B%86"><span class="nav-number">3.1.2.</span> <span class="nav-text">求得三角形内部点集</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%B1%82%E5%BE%97%E6%8E%A7%E5%88%B6%E5%A4%9A%E8%BE%B9%E5%BD%A2%E5%86%85%E9%83%A8%E5%83%8F%E7%B4%A0%E7%82%B9"><span class="nav-number">3.1.3.</span> <span class="nav-text">求得控制多边形内部像素点</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E9%87%8D%E6%9E%84"><span class="nav-number">3.1.4.</span> <span class="nav-text">代码重构</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E6%B1%82%E8%A7%A3%E6%96%B9%E7%A8%8B%E7%BB%84"><span class="nav-number">3.2.</span> <span class="nav-text">构造求解方程组</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="nav-number">3.2.1.</span> <span class="nav-text">数据准备</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%96%B9%E7%A8%8B%E7%BB%84%E6%9E%84%E9%80%A0%E6%B1%82%E8%A7%A3"><span class="nav-number">3.2.2.</span> <span class="nav-text">方程组构造求解</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%95%88%E6%9E%9C%E5%B1%95%E7%A4%BA"><span class="nav-number">3.2.3.</span> <span class="nav-text">效果展示</span></a></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="hefan"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">hefan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hefan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

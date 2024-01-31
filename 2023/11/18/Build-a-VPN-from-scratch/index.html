@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon_1.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32_1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16_1.png">
+  <link rel="mask-icon" href="/images/android-chrome-512x512_1.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="在docker虚拟网络中使用TUN建立的简易VPN. 通信用户可以通过界面进行基本的配置, 可以设定加解密模式. 项目结果请见效果演示.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Build a VPN from scratch">
+<meta property="og:url" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/index.html">
+<meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="在docker虚拟网络中使用TUN建立的简易VPN. 通信用户可以通过界面进行基本的配置, 可以设定加解密模式. 项目结果请见效果演示.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231103205824388.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231103212937941.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231115202345480.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231104124432823.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231104125128156.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231104145953555.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231103163237770.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231104153610219.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231114130623984.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231114162033741.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231114180133220.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231114180301623.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231116143734661.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117001522574.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117001725816.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117002026673.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117002120567.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117002355106.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117002609576.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117002825254.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117003001364.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117003112769.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117003230859.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117003313497.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117003445730.png">
+<meta property="og:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231117003528380.png">
+<meta property="article:published_time" content="2023-11-18T15:21:36.000Z">
+<meta property="article:modified_time" content="2023-11-19T10:44:51.835Z">
+<meta property="article:author" content="hefan">
+<meta property="article:tag" content="VPN">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2023/11/18/Build-a-VPN-from-scratch/image-20231103205824388.png">
+
+<link rel="canonical" href="http://example.com/2023/11/18/Build-a-VPN-from-scratch/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Build a VPN from scratch | Fan's Page</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fan's Page</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2023/11/18/Build-a-VPN-from-scratch/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Build a VPN from scratch
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2023-11-18 23:21:36" itemprop="dateCreated datePublished" datetime="2023-11-18T23:21:36+08:00">2023-11-18</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2023-11-19 18:44:51" itemprop="dateModified" datetime="2023-11-19T18:44:51+08:00">2023-11-19</time>
+              </span>
+
+          
+            <div class="post-description">在docker虚拟网络中使用TUN建立的简易VPN. 通信用户可以通过界面进行基本的配置, 可以设定加解密模式. 项目结果请见效果演示.</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h1 id="build-a-vpn-from-scratch">Build a VPN from scratch</h1>
+<h2 id="项目要求">项目要求</h2>
+<ul>
+<li>通信用户可以通过界面进行基本的配置</li>
+<li>可以设定加解密模式</li>
+<li>数据实现机密性和完整性保护</li>
+<li>实现对IP数据包负载基本的加密和认证</li>
+</ul>
+<p>项目结果请见<a href="#效果演示">效果演示</a>.</p>
+<h2 id="实验环境配置">实验环境配置</h2>
+<p>本次实验环境为</p>
+<ul>
+<li><p>Win10虚拟机 OS: Ubuntu-22.04.3-desktop-amd64</p></li>
+<li><p>Wireshark抓包工具</p></li>
+</ul>
+<p>为了调试方便, 建议安装终端分屏软件<code>terminator</code>. 本次实验语言选择为<code>python</code>. 原计划使用<code>C++</code>, 但因为系统版本过高, 编译产生<code>exe</code>文件所需的GLIBC_2.34在image系统中缺失. 如果计划使用C++编程, 请安装Ubuntu 20.04.😢😢</p>
+<h2 id="前置知识">前置知识</h2>
+<p>需要对基于TUN实现的VPN技术有所了解. 简单掌握docker compose, TSL, PyQt5.</p>
+<p>这里提供一些学习资源.</p>
+<p>VPN原理 : OpenVPN Building and Integrating Virtual Private Networks Chapter 1-2.</p>
+<p>TUN编程: Computer Internet Security A Hands-on Approach Chapter 19.</p>
+<p>TLS: Computer Internet Security A Hands-on Approach Chapter 25.</p>
+<p>Docker Tutorial: <a target="_blank" rel="noopener" href="https://github.com/seed-labs/seed-labs/blob/master/manuals/docker/SEEDManual-Container.md">Docker</a>.</p>
+<p>PyQt5: <a target="_blank" rel="noopener" href="https://build-system.fman.io/pyqt5-tutorial">PyQt5 Tutorial</a>, <a target="_blank" rel="noopener" href="https://www.techwithtim.net/tutorials/python-module-walk-throughs/pyqt5-tutorial">techwithtim</a>.</p>
+<p>Python子进程控制：<a target="_blank" rel="noopener" href="https://python101.pythonlibrary.org/chapter19_subprocess.html">python101.com</a> .</p>
+<h2 id="网络环境配置">网络环境配置</h2>
+<h3 id="实验环境的配置">实验环境的配置</h3>
+<p>我们使用<strong>docker-compose</strong>模拟网络环境,这比虚拟机模拟方便的多. 拟使用网络拓扑如图所示.</p>
+<p><img data-src="image-20231103205824388.png" /></p>
+<p>In practice, the VPN client and VPN server are connected via the Internet. For the sake of simplicity, we directly connect these two machines to the same LAN in this lab, i.e., this LAN simulates the Internet. We will use the “NAT Network” adaptor for this LAN. The third machine, Host V, is a computer inside the private network. Users on Host U (outside of the private network) want to communicate with Host V via the VPN tunnel.</p>
+<p>文件<code>docker-compose.yml</code>中已经对网络环境进行了设置. 我们先新建文件夹<strong>VPN</strong>, 在其中新建文件夹<strong>volumes</strong>. 将<code>docker-compose.yml</code>复制到<strong>VPN</strong>中, 打开终端执行命令行</p>
+<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker-compose up</span><br></pre></td></tr></table></figure>
+<p>后出现</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">hexufan@hexufan-virtual-machine:~$ cd VPN</span><br><span class="line">hexufan@hexufan-virtual-machine:~/VPN$ ls</span><br><span class="line">docker-compose.yml  volumes</span><br><span class="line">hexufan@hexufan-virtual-machine:~/VPN$ docker-compose up</span><br><span class="line">[+] Running 6/6</span><br><span class="line"> ⠿ Network net-10.9.0.0         Created                                    0.1s</span><br><span class="line"> ⠿ Network net-192.168.60.0     Created                                    0.1s</span><br><span class="line"> ⠿ Container server-router      Created                                    0.1s</span><br><span class="line"> ⠿ Container client-10.9.0.5    Created                                    0.1s</span><br><span class="line"> ⠿ Container host-192.168.60.6  Created                                    0.1s</span><br><span class="line"> ⠿ Container host-192.168.60.5  Created                                    0.1s</span><br><span class="line">Attaching to client-10.9.0.5, host-192.168.60.5, host-192.168.60.6, server-router</span><br><span class="line">host-192.168.60.5  |  * Starting internet superserver inetd              [ OK ] </span><br><span class="line">host-192.168.60.6  |  * Starting internet superserver inetd              [ OK ] </span><br></pre></td></tr></table></figure>
+<p>即可实现环境搭建. 注意, 实验过程中该终端陷入阻塞. 后续新建终端窗口执行命令即可. 接下来我们对环境进行检验.</p>
+<ul>
+<li>Host U 可与服务器通信</li>
+</ul>
+<p>如下命令行可以让我们进入容器. 在当前终端输入命令, 由容器执行.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it &lt;id&gt; /bin/bash</span><br></pre></td></tr></table></figure>
+<p>其中<code>&lt;id&gt;</code>为容器编号, 可以通过</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker ps --format &quot;&#123;&#123;.ID&#125;&#125; &#123;&#123;.Names&#125;&#125;&quot;</span><br></pre></td></tr></table></figure>
+<p>查看. 我们进入VPN Client对应容器. 执行<code>docker ps --format "&#123;&#123;.ID&#125;&#125; &#123;&#123;.Names&#125;&#125;"</code>结果如下.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">ec150482e082 client-10.9.0.5</span><br><span class="line">bfa83c984d6e server-router</span><br><span class="line">1d106d78c904 host-192.168.60.6</span><br><span class="line">5b610b7cb80a host-192.168.60.5</span><br></pre></td></tr></table></figure>
+<p>执行<code>docker exec -it ec /bin/bash</code>我们进入客户端容器. 其中<id>无需写全, 足够区别于其余容器即可. 执行后用户名变为</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@ec150482e082:/# </span><br></pre></td></tr></table></figure>
+<p>执行<code>ping -c 3 10.9.0.11</code>, 这是在测试是否能够与10.9.0.11主机通信. 结果应为</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@ec150482e082:/# ping -c 3 10.9.0.11</span><br><span class="line">PING 10.9.0.11 (10.9.0.11) 56(84) bytes of data.</span><br><span class="line">64 bytes from 10.9.0.11: icmp_seq=1 ttl=64 time=0.087 ms</span><br><span class="line">64 bytes from 10.9.0.11: icmp_seq=2 ttl=64 time=0.060 ms</span><br><span class="line">64 bytes from 10.9.0.11: icmp_seq=3 ttl=64 time=0.057 ms</span><br><span class="line"></span><br><span class="line">--- 10.9.0.11 ping statistics ---</span><br><span class="line">3 packets transmitted, 3 received, 0% packet loss, time 2046ms</span><br><span class="line">rtt min/avg/max/mdev = 0.057/0.068/0.087/0.013 ms</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>VPN Server 可与 Host V 通信</p>
+<p>如前所述, 进入Server容器, 测试是否联通即可. 此处不再赘述. 这里提供退出容器的命令.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">exit</span><br></pre></td></tr></table></figure></li>
+<li><p>Host U 与 Host V 不可通信</p>
+<p>结果应为</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@ec150482e082:/# ping -c 3 192.168.60.5</span><br><span class="line">PING 192.168.60.5 (192.168.60.5) 56(84) bytes of data.</span><br><span class="line"></span><br><span class="line">--- 192.168.60.5 ping statistics ---</span><br><span class="line">3 packets transmitted, 0 received, 100% packet loss, time 2047ms</span><br></pre></td></tr></table></figure></li>
+<li><p>在虚拟机中使用Wireshark能够实现抓包</p>
+<p>我们随意进入容器, <code>ping</code>的同时观察是否能够抓包即可. 下图时在Host U 上执行<code>ping -c 3 10.9.0.11</code>抓包结果.</p>
+<figure>
+<img data-src="image-20231103212937941.png" alt="image-20231103212937941" /><figcaption aria-hidden="true">image-20231103212937941</figcaption>
+</figure>
+<p>此处可能遇到若干问题. 列举如下, 供参考.</p>
+<ul>
+<li><p>Wireshark 没有对应interface的捕获权限.</p>
+<p>在命令行中执行<code>sudo wireshark</code>启动即可.</p></li>
+<li><p>嗅探那些接口？</p>
+<p>据笔者观察, docker建立的网络均以<em>br-</em>开头, 容器为<em>veth-</em>. 我们只需在Wireshark主界面按住<code>ctrl</code>逐个选中抓包即可.</p></li>
+</ul></li>
+</ul>
+<h3 id="docker网络的关闭">Docker网络的关闭</h3>
+<p>请注意, 有时由于程序调整我们需要重启docker网络, 或者我们关机退出. 请务必关闭网络, 否则会带来不必要的麻烦. 操作命令如下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"># 关闭全部容器</span><br><span class="line">docker stop $(docker ps -aq)</span><br><span class="line"># 移除全部容器</span><br><span class="line">docker rm $(docker ps -aq)</span><br><span class="line"># 查看网络id</span><br><span class="line">docker network ps</span><br><span class="line"># 删除网络</span><br><span class="line">docker network rm &lt;id&gt;</span><br><span class="line">or</span><br><span class="line">docker system prune -a</span><br><span class="line">-----------------------------</span><br><span class="line">WARNING! This will remove:</span><br><span class="line">  - all stopped containers</span><br><span class="line">  - all networks not used by at least one container</span><br><span class="line">  - all images without at least one container associated to them</span><br><span class="line">  - all build cache</span><br></pre></td></tr></table></figure>
+<p>最后一个命令请谨慎使用, 他会连同image一起删除. 重启网络时需要重新下载.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop $(docker ps -aq) &amp;&amp; docker rm $(docker ps -aq)</span><br></pre></td></tr></table></figure>
+<p>由于各种原因, 某些进程可能没有结束我们就已经关闭终端了. 存活的进程会占用IP等等资源, 重新启动程序时会出现错误.</p>
+<p>解决方法如下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"># 查看在运行进程id</span><br><span class="line">ps aux</span><br><span class="line"># 结束它</span><br><span class="line">kill &lt;PID&gt;</span><br></pre></td></tr></table></figure>
+<p>有时会出现结束进程后仍然报错资源被占用, 只需稍等片刻再做尝试即可.</p>
+<h3 id="注意事项">注意事项</h3>
+<h4 id="代码迁移">代码迁移</h4>
+<p>我们使用虚拟机, 有时会将Windows下编写的代码文件放在Linux环境下运行. 这时会遇到如下错误.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/usr/bin/env: ‘python3\r’: No such file or directory </span><br></pre></td></tr></table></figure>
+<p>系统提示我们镜像当中不存在python, 这显然是不对的. 出现这个问题的原因如下.</p>
+<blockquote>
+<p>The problem are your line ending characters. Your file was created or edited on a Windows system and uses Windows/DOS-style line endings (CR+LF), whereas Linux systems like Ubuntu require Unix-style line endings (LF).</p>
+<p>There is a simple tool that can convert the two different styles for you called <code>dos2unix</code>.</p>
+<p>Install it by running</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&gt;sudo apt install dos2unix</span><br></pre></td></tr></table></figure>
+<p>After that, you can convert files in either direction using one of the commands</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt;dos2unix /PATH/TO/YOUR/WINDOWS_FILE</span><br><span class="line">&gt;unix2dos /PATH/TO/YOUR/LINUX_FILE</span><br></pre></td></tr></table></figure>
+<p>Example:</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">$ <span class="built_in">cat</span> test.py</span> </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"><span class="meta">#!/usr/bin/env python3</span></span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash"><span class="built_in">print</span>(<span class="string">&quot;ok&quot;</span>)</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">$ ./test.py</span> </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">/usr/bin/env: ‘python3\r’: No such file or directory</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">$ dos2unix test.py</span> </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">dos2unix: converting file test.py to Unix format ...</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">$ ./test.py</span> </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">ok</span></span><br></pre></td></tr></table></figure>
+</blockquote>
+<p>以上来自<a target="_blank" rel="noopener" href="https://askubuntu.com/questions/896860/usr-bin-env-python3-r-no-such-file-or-directory">askubuntu.com</a>. 为了避免这个问题, 我们最好直接在虚拟机中编写代码.</p>
+<h4 id="虚拟机网络问题">虚拟机网络问题</h4>
+<p>如果在虚拟机中科学上网时下载包、库等, 可能出现如下错误.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">hexufan@hexufan-virtual-machine:~$ pip install PyQt5</span><br><span class="line">Defaulting to user installation because normal site-packages is not writeable</span><br><span class="line">Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">WARNING: Retrying (Retry(total=4, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;ProtocolError(&#x27;Connection aborted.&#x27;, InvalidURL(&quot;URL can&#x27;t contain control characters. &#x27; 192.168.238.1&#x27; (found at least &#x27; &#x27;)&quot;))&#x27;: /simple/pyqt5/</span><br><span class="line">WARNING: Retrying (Retry(total=3, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;ProtocolError(&#x27;Connection aborted.&#x27;, InvalidURL(&quot;URL can&#x27;t contain control characters. &#x27; 192.168.238.1&#x27; (found at least &#x27; &#x27;)&quot;))&#x27;: /simple/pyqt5/</span><br><span class="line">WARNING: Retrying (Retry(total=2, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;ProtocolError(&#x27;Connection aborted.&#x27;, InvalidURL(&quot;URL can&#x27;t contain control characters. &#x27; 192.168.238.1&#x27; (found at least &#x27; &#x27;)&quot;))&#x27;: /simple/pyqt5/</span><br><span class="line">WARNING: Retrying (Retry(total=1, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;ProtocolError(&#x27;Connection aborted.&#x27;, InvalidURL(&quot;URL can&#x27;t contain control characters. &#x27; 192.168.238.1&#x27; (found at least &#x27; &#x27;)&quot;))&#x27;: /simple/pyqt5/</span><br><span class="line">WARNING: Retrying (Retry(total=0, connect=None, read=None, redirect=None, status=None)) after connection broken by &#x27;ProtocolError(&#x27;Connection aborted.&#x27;, InvalidURL(&quot;URL can&#x27;t contain control characters. &#x27; 192.168.238.1&#x27; (found at least &#x27; &#x27;)&quot;))&#x27;: /simple/pyqt5/</span><br><span class="line">ERROR: Could not find a version that satisfies the requirement PyQt5 (from versions: none)</span><br><span class="line">ERROR: No matching distribution found for PyQt5</span><br></pre></td></tr></table></figure>
+<p>只需把VPN关掉, 并将虚拟机代理模式改为自动即可.</p>
+<p><img data-src="image-20231115202345480.png" style="zoom:50%;" /></p>
+<p>请注意, 重新设置后最好关掉原有终端重新下载.</p>
+<h2 id="简单vpn设置">简单VPN设置</h2>
+<p>我们逐步实现VPN的实现, 并对效果进行检验.</p>
+<h3 id="step-1-设置客户端tun接口">Step 1 设置客户端TUN接口</h3>
+<p>VPN的实现很大程度依赖于<strong>TUN</strong>接口, 我们能够借此实现对网络通信中直接到达系统内核的数据包的操作. 详见<a href="Computer%20Internet%20Security%20A%20Hands-on%20Approach.pdf">Computer Internet Security A Hands-on Approach</a> Chapter 19, 后续会略作讲解.</p>
+<p>之前我们在<strong>VPN</strong>下创建了<strong>volumes</strong>文件夹, 该文件夹在docker-compose的设定下已经挂载(mount)到所有容器的/volumes文件夹下. 我们将客户端、服务器所需用到的代码文件放在该文件夹中, 方便使用.</p>
+<h4 id="创建tun">创建TUN</h4>
+<p>首先进入客户端容器.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">root@5885e0c8b2f0:/# </span><br></pre></td></tr></table></figure>
+<p>我们创建TUN接口. 进入客户端运行文件<code>vpnclient.py</code>.</p>
+<p>其中代码如下. 注意, 文件开头<code>#!/usr/bin/env python3</code>指定编译器, 不能删除.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> fcntl</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">from</span> scapy.layers.inet <span class="keyword">import</span> IP</span><br><span class="line"><span class="keyword">from</span> scapy.<span class="built_in">all</span> <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line">TUNSETIFF = <span class="number">0x400454ca</span></span><br><span class="line">IFF_TUN   = <span class="number">0x0001</span></span><br><span class="line">IFF_TAP   = <span class="number">0x0002</span></span><br><span class="line">IFF_NO_PI = <span class="number">0x1000</span></span><br><span class="line"></span><br><span class="line">tun = os.<span class="built_in">open</span>(<span class="string">&quot;/dev/net/tun&quot;</span>, os.O_RDWR)</span><br><span class="line">ifr = struct.pack(<span class="string">&#x27;16sH&#x27;</span>, <span class="string">b&#x27;hexfantun%d&#x27;</span>, IFF_TUN | IFF_NO_PI)</span><br><span class="line">ifname_bytes  = fcntl.ioctl(tun, TUNSETIFF, ifr)</span><br><span class="line"></span><br><span class="line">ifname = ifname_bytes.decode(<span class="string">&#x27;UTF-8&#x27;</span>)[:<span class="number">16</span>].strip(<span class="string">&quot;\x00&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Interface Name: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(ifname))</span><br></pre></td></tr></table></figure>
+<p>会遇到操作权限的问题, 我们为所有用户添加执行文件权限, 而后执行.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">root@5885e0c8b2f0:/# cd volumes</span><br><span class="line">root@5885e0c8b2f0:/volumes# ls</span><br><span class="line">crt  vpnclient.py  vpnserver.py</span><br><span class="line">root@5885e0c8b2f0:/volumes# chmod a+x vpnclient.py</span><br><span class="line">root@5885e0c8b2f0:/volumes# vpnclient.py</span><br><span class="line">Interface Name: hexfantun0</span><br></pre></td></tr></table></figure>
+<p>至此该终端阻塞. 我们新建终端, 进入容器, 可以通过<code>ip address</code>看到我们创建的TUN接口.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">hexufan@hexufan-virtual-machine:~/VPN$ docker exec -it 58 /bin/bash</span><br><span class="line">root@5885e0c8b2f0:/# ip address</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: hexfantun0: &lt;POINTOPOINT,MULTICAST,NOARP&gt; mtu 1500 qdisc noop state DOWN group default qlen 500</span><br><span class="line">    link/none </span><br><span class="line">8: eth0@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default </span><br><span class="line">    link/ether 02:42:0a:09:00:05 brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br><span class="line">    inet 10.9.0.5/24 brd 10.9.0.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+<p>接下来我们分配IP地址给该接口, 并将其激活.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">root@5885e0c8b2f0:/# ip addr add 192.168.53.99/24 dev hexfantun0</span><br><span class="line">root@5885e0c8b2f0:/# ip link set dev hexfantun0 up</span><br></pre></td></tr></table></figure>
+<p>再次查验, 可以看到不同.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">root@5885e0c8b2f0:/# ip address</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">2: hexfantun0: &lt;POINTOPOINT,MULTICAST,NOARP,UP,LOWER_UP&gt; mtu 1500 qdisc fq_codel state UNKNOWN group default qlen 500</span><br><span class="line">    link/none </span><br><span class="line">    inet 192.168.53.99/24 scope global hexfantun0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">8: eth0@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default </span><br><span class="line">    link/ether 02:42:0a:09:00:05 brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br><span class="line">    inet 10.9.0.5/24 brd 10.9.0.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+<p>此后通信均要完成此操作, 于是我们将其写入代码. 注意, 需在<code>while</code>循环之前.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">os.system(<span class="string">&quot;ip addr add 192.168.53.99/24 dev &#123;&#125;&quot;</span>.<span class="built_in">format</span>(ifname))</span><br><span class="line">os.system(<span class="string">&quot;ip link set dev &#123;&#125; up&quot;</span>.<span class="built_in">format</span>(ifname))</span><br></pre></td></tr></table></figure>
+<h4 id="从tun读取数据">从TUN读取数据</h4>
+<p>接下来我们测试TUN接口能否读写数据. 更改while循环中代码如下.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">	packet = os.read(tun, <span class="number">2048</span>)</span><br><span class="line">	<span class="keyword">if</span> packet:</span><br><span class="line">		ip = IP(packet)</span><br><span class="line">		<span class="built_in">print</span>(ip.summary())</span><br></pre></td></tr></table></figure>
+<p>为了应用更改, 我们重新运行<code>vpnclient.py</code>. 请注意, 程序每次运行都会新建一个TUN接口. 稳妥起见, 我们删去原有接口后再重新运行.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip link delete hexfantun0</span><br></pre></td></tr></table></figure>
+<p>运行<code>ip address</code>检验是否删除.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">root@169e1b2c46f8:/# ip address</span><br><span class="line">1: lo: &lt;LOOPBACK,UP,LOWER_UP&gt; mtu 65536 qdisc noqueue state UNKNOWN group default qlen 1000</span><br><span class="line">    link/loopback 00:00:00:00:00:00 brd 00:00:00:00:00:00</span><br><span class="line">    inet 127.0.0.1/8 scope host lo</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br><span class="line">8: eth0@if9: &lt;BROADCAST,MULTICAST,UP,LOWER_UP&gt; mtu 1500 qdisc noqueue state UP group default </span><br><span class="line">    link/ether 02:42:0a:09:00:05 brd ff:ff:ff:ff:ff:ff link-netnsid 0</span><br><span class="line">    inet 10.9.0.5/24 brd 10.9.0.255 scope global eth0</span><br><span class="line">       valid_lft forever preferred_lft forever</span><br></pre></td></tr></table></figure>
+<ul>
+<li><p>Client与<code>192.168.53.0/24</code>网段通信</p>
+<p>可以通信, 应当在运行<code>vpnclient.py</code>的终端看到如下信息.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@169e1b2c46f8:/volumes# vpnclient.py</span><br><span class="line">Interface Name: hexfantun0</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.53.1 echo-request 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.53.1 echo-request 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.53.1 echo-request 0 / Raw</span><br></pre></td></tr></table></figure>
+<p>这是因为系统自动将发送至该网段的数据包发往TUN接口.</p></li>
+<li><p>Client与<code>192.160.60.0/24</code>网段通信</p>
+<p>应为不通, 我们的VPN还没有设置完毕.</p></li>
+</ul>
+<h4 id="向tun写入数据">向TUN写入数据</h4>
+<p>更改代码如下.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    packet = os.read(tun, <span class="number">2048</span>)</span><br><span class="line">    <span class="keyword">if</span> packet:</span><br><span class="line">        ip = IP(packet)</span><br><span class="line">        <span class="built_in">print</span>(ip.summary())</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">if</span> ICMP <span class="keyword">in</span> ip:</span><br><span class="line">            newip = IP(src=ip[IP].dst, dst=ip[IP].src, ihl=ip[IP].ihl)</span><br><span class="line">            newip.ttl = <span class="number">99</span></span><br><span class="line">            newicmp = ICMP(<span class="built_in">type</span>=<span class="number">0</span>, <span class="built_in">id</span>=ip[ICMP].<span class="built_in">id</span>, seq=ip[ICMP].seq)</span><br><span class="line">            <span class="keyword">if</span> ip.haslayer(Raw):</span><br><span class="line">                data = ip[Raw].load</span><br><span class="line">                newpkt = newip/newicmp/data</span><br><span class="line">            <span class="keyword">else</span>:</span><br><span class="line">                newpkt = newip/newicmp</span><br><span class="line">            <span class="built_in">print</span>(newpkt.summary())</span><br><span class="line">            os.write(tun, <span class="built_in">bytes</span>(newpkt))</span><br></pre></td></tr></table></figure>
+<p>上述代码检验收到的IP数据包. 若其中含有<code>ping</code>发出的ICMP包, 读取其中内容原路发回. 我们先重新运行程序. 一应操作如前.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">hexufan@hexufan-virtual-machine:~/VPN$ docker exec -it 16 /bin/bash //进入客户端容器</span><br><span class="line">root@169e1b2c46f8:/# ping 192.168.53.1 -c 3</span><br><span class="line">PING 192.168.53.1 (192.168.53.1) 56(84) bytes of data.</span><br><span class="line">64 bytes from 192.168.53.1: icmp_seq=1 ttl=99 time=1.67 ms</span><br><span class="line">64 bytes from 192.168.53.1: icmp_seq=2 ttl=99 time=1.72 ms</span><br><span class="line">64 bytes from 192.168.53.1: icmp_seq=3 ttl=99 time=1.11 ms</span><br><span class="line"></span><br><span class="line">--- 192.168.53.1 ping statistics ---</span><br><span class="line">3 packets transmitted, 3 received, 0% packet loss, time 2004ms</span><br><span class="line">rtt min/avg/max/mdev = 1.111/1.500/1.721/0.275 ms</span><br><span class="line">root@169e1b2c46f8:/# </span><br></pre></td></tr></table></figure>
+<p>可以在<code>vpnclient.py</code>终端看到TUN收到和发出数据包.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">root@169e1b2c46f8:/volumes# vpnclient.py</span><br><span class="line">Interface Name: hexfantun0</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.53.1 echo-request 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.1 &gt; 192.168.53.99 echo-reply 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.53.1 echo-request 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.1 &gt; 192.168.53.99 echo-reply 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.53.1 echo-request 0 / Raw</span><br><span class="line">IP / ICMP 192.168.53.1 &gt; 192.168.53.99 echo-reply 0 / Raw</span><br></pre></td></tr></table></figure>
+<p>至此TUN已经检验完成.</p>
+<h3 id="step-2-实现客户端与服务器间的tunnel通信">Step 2 实现客户端与服务器间的Tunnel通信</h3>
+<p>我们已创建了客户端容器中的TUN接口, 通过在其上编程实现数据包的操作, 这已经在<a href="#向TUN写入数据">向TUN写入数据</a>中有所体会. VPN的原理就是在这一步将数据包进行包装, 实现加密通信, 想必各位已不难理解. 下一步我们实现TUN接口与服务器的通信. 为了先行测试单向通信与否, 我们使用UDP.</p>
+<h4 id="单向通信">单向通信</h4>
+<p>我们新建文件<code>vpnserver.py</code>, 这只是检验服务器是否收到数据.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">from</span> scapy.layers.inet <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> scapy.<span class="built_in">all</span> <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"><span class="comment"># 本机地址</span></span><br><span class="line">IP_A = <span class="string">&quot;0.0.0.0&quot;</span> </span><br><span class="line">PORT = <span class="number">9090</span></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.bind((IP_A, PORT))</span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">	data, (ip, port) = sock.recvfrom(<span class="number">2048</span>)</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot;&#123;&#125;:&#123;&#125; --&gt; &#123;&#125;:&#123;&#125;&quot;</span>.<span class="built_in">format</span>(ip, port, IP_A, PORT))</span><br><span class="line">	pkt = IP(data)</span><br><span class="line">	<span class="built_in">print</span>(<span class="string">&quot; Inside: &#123;&#125; --&gt; &#123;&#125;&quot;</span>.<span class="built_in">format</span>(pkt.src, pkt.dst))</span><br></pre></td></tr></table></figure>
+<p>除此之外, 我们还需要修改路由规则, 将发往<code>192.168.60.0/24</code>网段的数据包转给TUN接口. 这样后续我们就可以对这些数据进行处理.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ip route add 192.168.60.0/24 dev hexfantun0 via 192.168.53.99</span><br></pre></td></tr></table></figure>
+<p>其意义为: 添加路由规则, 发往<code>192.168.60.0/24</code>网段的数据包转给设备hexfantun0, 由地址<code>192.168.53.99</code>发出. 可以将其添加到程序里自动化执行. 同样注意, 应在while循环之前.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">PN = <span class="string">&quot;192.168.60.0/24&quot;</span></span><br><span class="line">os.system(<span class="string">&quot;ip route add &#123;&#125; dev &#123;&#125; via 192.168.53.99&quot;</span>.<span class="built_in">format</span>(PN, ifname))</span><br></pre></td></tr></table></figure>
+<p><code>vpnclient.py</code>while循环替换为如下代码, 将路由转到TUN接口的数据全部转发给<code>10.9.0.11</code>.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">	packet = os.read(tun, <span class="number">2048</span>)</span><br><span class="line">	<span class="keyword">if</span> packet:</span><br><span class="line">		sock.sendto(packet, (<span class="number">10.9</span><span class="number">.0</span><span class="number">.11</span>, <span class="number">9090</span>))</span><br></pre></td></tr></table></figure>
+<p>我们分别在服务器、客户端容器运行对应程序. 尝试从客户端向服务器通信. 服务器可以收到信息.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">root@d17a2bd3d5f7:/volumes# vpnserver.py</span><br><span class="line">10.9.0.5:48827 --&gt; 0.0.0.0:9090</span><br><span class="line"> Inside: 192.168.53.99 --&gt; 192.168.60.11</span><br><span class="line">10.9.0.5:48827 --&gt; 0.0.0.0:9090</span><br><span class="line"> Inside: 192.168.53.99 --&gt; 192.168.60.11</span><br><span class="line">10.9.0.5:48827 --&gt; 0.0.0.0:9090</span><br><span class="line"> Inside: 192.168.53.99 --&gt; 192.168.60.11</span><br></pre></td></tr></table></figure>
+<p>但是此时仅是单向连通.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@169e1b2c46f8:/# ping 192.168.60.11 -c 3</span><br><span class="line">PING 192.168.60.11 (192.168.60.11) 56(84) bytes of data.</span><br><span class="line"></span><br><span class="line">--- 192.168.60.11 ping statistics ---</span><br><span class="line">3 packets transmitted, 0 received, 100% packet loss, time 2031ms</span><br></pre></td></tr></table></figure>
+<h4 id="双向通信">双向通信</h4>
+<h5 id="连通子网主机host-v">连通子网主机Host V</h5>
+<p>需要注意的是, Linux系统默认不转发数据. 也就是说我们的服务器如果收到发往<code>192.168.60.0/24</code>中其余主机的数据包时会将其销毁. 所以我们需要执行如下指令.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">net.ipv4.ip_forward=1</span><br></pre></td></tr></table></figure>
+<p>不过我们的<code>docker-compose.yml</code>中已经做了设置, 因此我们不需要任何操作.</p>
+<p>接下来我们设置服务器, 实现双向连通. 自然, 如同客户端一样需要设置TUN接口. 此处不再赘述, 给出代码. 它将收到的数据转发到子网中去.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">#!/usr/bin/env python3</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> fcntl</span><br><span class="line"><span class="keyword">import</span> struct</span><br><span class="line"><span class="keyword">import</span> os</span><br><span class="line"><span class="keyword">import</span> time</span><br><span class="line"><span class="keyword">from</span> scapy.layers.inet <span class="keyword">import</span> *</span><br><span class="line"><span class="keyword">from</span> scapy.<span class="built_in">all</span> <span class="keyword">import</span> *</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">TUNSETIFF = <span class="number">0x400454ca</span></span><br><span class="line">IFF_TUN   = <span class="number">0x0001</span></span><br><span class="line">IFF_TAP   = <span class="number">0x0002</span></span><br><span class="line">IFF_NO_PI = <span class="number">0x1000</span></span><br><span class="line"></span><br><span class="line"><span class="comment"># Create the tun interface</span></span><br><span class="line">tun = os.<span class="built_in">open</span>(<span class="string">&quot;/dev/net/tun&quot;</span>, os.O_RDWR)</span><br><span class="line">ifr = struct.pack(<span class="string">&#x27;16sH&#x27;</span>, <span class="string">b&#x27;tun%d&#x27;</span>, IFF_TUN | IFF_NO_PI)</span><br><span class="line">ifname_bytes  = fcntl.ioctl(tun, TUNSETIFF, ifr)</span><br><span class="line"></span><br><span class="line"><span class="comment"># Get the interface name</span></span><br><span class="line">ifname = ifname_bytes.decode(<span class="string">&#x27;UTF-8&#x27;</span>)[:<span class="number">16</span>].strip(<span class="string">&quot;\x00&quot;</span>)</span><br><span class="line"><span class="built_in">print</span>(<span class="string">&quot;Interface Name: &#123;&#125;&quot;</span>.<span class="built_in">format</span>(ifname))</span><br><span class="line"></span><br><span class="line">os.system(<span class="string">&quot;ip addr add 192.168.53.11/24 dev &#123;&#125;&quot;</span>.<span class="built_in">format</span>(ifname))</span><br><span class="line">os.system(<span class="string">&quot;ip link set dev &#123;&#125; up&quot;</span>.<span class="built_in">format</span>(ifname))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">IP_A = <span class="string">&quot;10.9.0.11&quot;</span></span><br><span class="line">PORT = <span class="number">9090</span></span><br><span class="line"></span><br><span class="line">sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)</span><br><span class="line">sock.bind((IP_A, PORT))</span><br><span class="line"></span><br><span class="line"><span class="keyword">while</span> <span class="literal">True</span>:</span><br><span class="line">    data, (ip, port) = sock.recvfrom(<span class="number">2048</span>)</span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot;&#123;&#125;:&#123;&#125; --&gt; &#123;&#125;:&#123;&#125;&quot;</span>.<span class="built_in">format</span>(ip, port, IP_A, PORT))</span><br><span class="line">    pkt = IP(data)</span><br><span class="line">    </span><br><span class="line">    <span class="built_in">print</span>(<span class="string">&quot; Inside: &#123;&#125; --&gt; &#123;&#125;&quot;</span>.<span class="built_in">format</span>(pkt.src, pkt.dst))</span><br><span class="line">    <span class="built_in">print</span>(pkt.summary())</span><br><span class="line">    os.write(tun,<span class="built_in">bytes</span>(pkt))</span><br></pre></td></tr></table></figure>
+<p>分别启动程序, 我们在客户端容器中ping Host V <code>192.168.60.5</code>. 结果如下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@169e1b2c46f8:/# ping -c 3 192.168.60.5</span><br><span class="line">PING 192.168.60.5 (192.168.60.5) 56(84) bytes of data.</span><br><span class="line"></span><br><span class="line">--- 192.168.60.5 ping statistics ---</span><br><span class="line">3 packets transmitted, 0 received, 100% packet loss, time 2061ms</span><br></pre></td></tr></table></figure>
+<p>服务器收到信息.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">Interface Name: servertun0</span><br><span class="line">10.9.0.5:52791 --&gt; 0.0.0.0:9090</span><br><span class="line"> Inside: 192.168.53.99 --&gt; 192.168.60.5</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.60.5 echo-request 0 / Raw</span><br><span class="line">10.9.0.5:52791 --&gt; 0.0.0.0:9090</span><br><span class="line"> Inside: 192.168.53.99 --&gt; 192.168.60.5</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.60.5 echo-request 0 / Raw</span><br><span class="line">10.9.0.5:52791 --&gt; 0.0.0.0:9090</span><br><span class="line"> Inside: 192.168.53.99 --&gt; 192.168.60.5</span><br><span class="line">IP / ICMP 192.168.53.99 &gt; 192.168.60.5 echo-request 0 / Raw</span><br></pre></td></tr></table></figure>
+<p>我们使用Wireshark查看数据包传输情况. 进入主页选中接口如下.</p>
+<figure>
+<img data-src="image-20231104124432823.png" alt="image-20231104124432823" /><figcaption aria-hidden="true">image-20231104124432823</figcaption>
+</figure>
+<p>为便于展示, 我们只ping一次. 此次通信全部数据包如下图所示.</p>
+<figure>
+<img data-src="image-20231104125128156.png" alt="image-20231104125128156" /><figcaption aria-hidden="true">image-20231104125128156</figcaption>
+</figure>
+<p>可以看到Host V可以收到信息并且做出了回应, 但是Host U没有收到. 这是因为双向的通信还没有设置, 这是接下来的任务.</p>
+<h5 id="实现双向通信">实现双向通信</h5>
+<p>只要在服务器与客户端均实现对套接字和TUN的同时监视即可, 我们选用简单的<code>select()</code>. 此处不展示代码, 因为在前述内容的基础上做到这点是很简单的.</p>
+<p>测试结果如下.</p>
+<figure>
+<img data-src="image-20231104145953555.png" alt="image-20231104145953555" /><figcaption aria-hidden="true">image-20231104145953555</figcaption>
+</figure>
+<p>可以看到实现了基本的双向连接. 至此, 我们已经完成了简单的VPN设置.</p>
+<h2 id="加密通信">加密通信</h2>
+<p>接下来考虑加密. 据 <a href="OpenVPN%20Building%20and%20Integrating%20Virtual%20Private%20Networks%20Learn%20how%20to%20build%20secure%20VPNs%20using%20this%20powerful%20Open%20Source....pdf">OpenVPN Building and Integrating Virtual Private Networks</a> 第二章, VPN需要满足如下要求.</p>
+<ul>
+<li>Privacy (Confidentiality): The data transferred should only be available to the authorized.</li>
+<li>Reliability (Integrity): The data transferred must not be changed between sender and receiver.</li>
+<li>Availability: The data transferred must be available when needed.</li>
+</ul>
+<p>即为机密性和完整性. 第三项业已完成. 现代网络通信主要依靠OpenSSL实现加密. 需要注意的是后续通信均为TCP套接字, 这是因为TLS是建立在TCP的基础之上的. 而之前使用UDP是为了便于从无到有测试通信, 我们做相应替换.</p>
+<p>我们首先创建CA为我们的服务器签发证书, 以下操作在 <a href="Computer%20Internet%20Security%20A%20Hands-on%20Approach.pdf">Computer Internet Security A Hands-on Approach</a> 24.3 Certificate Authority中有做讲解.</p>
+<h3 id="创建自签名ca">创建自签名CA</h3>
+<p>我们在共享文件夹<strong>volumes</strong>下新建文件夹<strong>demoCA</strong>.</p>
+<p>Ubuntu系统中自带<strong>OpenSSL</strong>配置文件路径为<code>usr/lib/ssl/openssl.cnf</code>,我们将其拷贝到我们的<strong>VPN</strong>文件夹中.可以看到其中内容如下.</p>
+<figure>
+<img data-src="image-20231103163237770.png" alt="image-20231103163237770" /><figcaption aria-hidden="true">image-20231103163237770</figcaption>
+</figure>
+<p>按照要求,在demoCA文件夹下新建文件夹. 其中<strong>serial</strong>只需输入一个数字即可,我们输入1000.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">$ mkdir demoCA</span><br><span class="line">$ cd demoCA</span><br><span class="line">$ mkdir certs crl newcerts</span><br><span class="line">$ touch index.txt serial</span><br><span class="line">$ echo 1000 &gt; serial</span><br><span class="line">$ cd ..</span><br><span class="line">$ cp /usr/lib/ssl/openssl.cnf openssl.cnf</span><br></pre></td></tr></table></figure>
+<p>完成之后我们在此<strong>volumes</strong>文件夹下执行命令如下, 生成证书.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">openssl req -x509 -newkey rsa:4096 -sha256 -days 3650 -keyout ca.key -out ca.crt</span><br></pre></td></tr></table></figure>
+<p>命令行完成后会提示输入信息、设置密码等,填写即可.</p>
+<h3 id="为服务器创建证书申请">为服务器创建证书申请</h3>
+<p>在<strong>volumes</strong>文件夹下执行如下命令. 其中<code>vpn.key</code>与<code>vpn.csr</code>是生成文件的名称, <code>subj</code>后是需要提供的信息,均可修改.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">openssl req -newkey rsa:2048 -sha256 \</span><br><span class="line">            -keyout vpn.key -out vpn.csr \</span><br><span class="line">            -subj &quot;/CN=vpn.com/O=NjustMath Inc./C=CN/ST=jiangsu/L=nanjing&quot; \</span><br><span class="line">            -passout pass:hexufan</span><br></pre></td></tr></table></figure>
+<h3 id="通过ca为申请署名">通过CA为申请署名</h3>
+<p>在<strong>volumes</strong>文件夹下执行如下命令. 请注意,若前述生成文件名做了修改,此处命令行应做相应调整.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">openssl ca -config penssl.cnf -policy policy_anything \</span><br><span class="line">		   -md sha256 -days 3650 \</span><br><span class="line">		   -in vpn.csr -out vpn.crt -batch \</span><br><span class="line">		   -cert ca.crt -keyfile ca.key</span><br></pre></td></tr></table></figure>
+<p>执行结果如下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">Enter pass phrase for ca.key:</span><br><span class="line">Check that the request matches the signature</span><br><span class="line">Signature ok</span><br><span class="line">Certificate Details:</span><br><span class="line">        Serial Number: 4096 (0x1000)</span><br><span class="line">        Validity</span><br><span class="line">            Not Before: Nov  3 08:57:45 2023 GMT</span><br><span class="line">            Not After : Oct 31 08:57:45 2033 GMT</span><br><span class="line">        Subject:</span><br><span class="line">            countryName               = CN</span><br><span class="line">            stateOrProvinceName       = jiangsu</span><br><span class="line">            localityName              = nanjing</span><br><span class="line">            organizationName          = NjustMath Inc.</span><br><span class="line">            commonName                = vpn.com</span><br><span class="line">        X509v3 extensions:</span><br><span class="line">            X509v3 Basic Constraints: </span><br><span class="line">                CA:FALSE</span><br><span class="line">            X509v3 Subject Key Identifier: </span><br><span class="line">                FC:A4:67:A4:AE:3B:8C:E7:E4:84:0D:4B:B2:93:C4:17:B0:BD:27:B1</span><br><span class="line">            X509v3 Authority Key Identifier: </span><br><span class="line">                23:68:9D:B0:8D:7F:7C:1E:73:11:77:B1:BE:66:37:9B:C5:69:89:6C</span><br><span class="line">Certificate is to be certified until Oct 31 08:57:45 2033 GMT (3650 days)</span><br><span class="line"></span><br><span class="line">Write out database with 1 new entries</span><br><span class="line">Data Base Updated</span><br></pre></td></tr></table></figure>
+<p>接下来将<code>vpn.crt</code> 和 <code>vpn.key</code>,移到server-certs文件夹. 将 <code>ca.crt</code> 移到<code>client-certs</code> 文件夹中.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ openssl x509 -in ca.crt -noout -subject_hash</span><br></pre></td></tr></table></figure>
+<p>得到结果为<code>bcf2bccd</code>,而后执行如下命令.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ ln -s ca.crt bcf2bccd</span><br></pre></td></tr></table></figure>
+<p>此时<strong>VPN</strong>文件夹内结构如图所示.</p>
+<p><img data-src="image-20231104153610219.png" alt="image-20231104153610219" style="zoom:50%;" /></p>
+<p>在测试之前, 我们要在客户端容器内将我们之前填写的域名<code>vpn.com</code>与IP地址<code>10.9.0.11</code>做映射.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo ‘10.9.0.11 vpn.com’ &gt;&gt; /etc/hosts</span><br></pre></td></tr></table></figure>
+<p>分别启动程序, 输入之前设置的密码. 不过我们已经在<code>docker-compose.yml</code>做了等价的处理.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">extra_hosts:</span><br><span class="line">    - &quot;vpn.com:10.9.0.11&quot;</span><br></pre></td></tr></table></figure>
+<p>这里会遇到问题.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssl.SSLError: [SSL: TLSV1_ALERT_UNKNOWN_CA] tlsv1 alert unknown ca (_ssl.c:1123)</span><br></pre></td></tr></table></figure>
+<p>这是说明我们的自签名证书不受系统信任, 但是在程序中我们已经将CA证书加载到TSL环境当中去.</p>
+<p><a target="_blank" rel="noopener" href="https://dataone-python.readthedocs.io/en/latest/gmn/setup/troubleshooting-tls.html">SSL官方文档</a> 针对这一问题的原因给出了一些描述.</p>
+<blockquote>
+<p>Cause:</p>
+<ul>
+<li><p>Client connected using a cert that was signed by a CA unknown to the server</p></li>
+<li><p>Apache was unable to find the root CA cert that was used for signing the client side cert in its local store of trusted root CA certs</p></li>
+<li><p>Apache was also unable to find intermediate certs that could be used for creating a chain from the client side cert to one of the root CA certs</p></li>
+</ul>
+</blockquote>
+<p>我们的通信是单向通信, 只有客户端会在TLS握手时使用<code>ca.crt</code>检验服务器证书. 这就是问题所在, 我们尝试调整代码.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"># context.load_verify_locations(capath=cadir) # load the client certificates</span><br><span class="line">-&gt; context.load_verify_locations(cadir)</span><br></pre></td></tr></table></figure>
+<p>原来我们将所有受信CA证书放置在一个文件夹, 现在我们直接将我们CA的文件传入. 发现可以建立加密通信.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">root@89ed775ef74e:/volumes# vpnserver.py</span><br><span class="line">Interface Name: servertun0</span><br><span class="line">Enter PEM pass phrase:</span><br><span class="line">&gt;&gt;&gt; Preparation done.</span><br><span class="line">&gt;&gt;&gt; 10.9.0.5 new connection</span><br></pre></td></tr></table></figure>
+<p>此处不知为何原文件夹没有成功导入, 可能是因为hash映射之类?</p>
+<h3 id="debug记录">DEBUG记录</h3>
+<p>以下为此问题的DEBUG记录.</p>
+<ul>
+<li>将CA证书导入系统受信CA</li>
+</ul>
+<p>方法来自<a target="_blank" rel="noopener" href="https://dataone-python.readthedocs.io/en/latest/gmn/setup/troubleshooting-tls.html">SSL官方文档</a> .</p>
+<blockquote>
+<p>For self signed client side certs, copy the signing CA cert to the directory pointed to by SSLCACertificatePath then run the c_rehash command in that directory.</p>
+</blockquote>
+<p>SSLCACertificatePath 一般是<code>/etc/ssl/certs</code>, 将CA的证书<code>ca.crt</code>导入. 然后在其下执行<code>c_rehash</code>.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">root@d08ebee7b0f5:/etc/ssl/certs# c_rehash</span><br><span class="line">Doing /usr/lib/ssl/certs</span><br><span class="line">WARNING: Skipping duplicate certificate ca-certificates.crt</span><br><span class="line">WARNING: Skipping duplicate certificate ca-certificates.crt</span><br></pre></td></tr></table></figure>
+<p>重新运行后错误照旧. 事实上, 这是因为我们的TSL通信根本没有加载系统受信CA列表.</p>
+<ul>
+<li>调整客户端检验模式</li>
+</ul>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">context_srv.verify_mode = ssl.CERT_NONE</span><br></pre></td></tr></table></figure>
+<p>无用, 事实上如是此处问题, 报错如下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssl.SSLError: [SSL: PEER_DID_NOT_RETURN_A_CERTIFICATE] peer did not return a certificate (_ssl.c:1131)</span><br></pre></td></tr></table></figure>
+<p>我们在建立服务器TSL环境时选择的模式<code>ssl.PROTOCOL_TLS_CLIENT</code>会默认不对客户端验证证书.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">context = ssl.SSLContext(ssl.PROTOCOL_TLS_CLIENT) </span><br></pre></td></tr></table></figure>
+<ul>
+<li>Python官方SSL库文档中</li>
+</ul>
+<blockquote>
+<p>SSLContext.<strong>load_cert_chain</strong>(<em>certfile</em>, <em>keyfile=None</em>, <em>password=None</em>)</p>
+<p>Load a private key and the corresponding certificate. The <em>certfile</em> string must be the path to a single file in PEM format containing the certificate as well as any number of CA certificates needed to establish the certificate’s authenticity. The <em>keyfile</em> string, if present, must point to a file containing the private key. Otherwise the private key will be taken from <em>certfile</em> as well. See the discussion of <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/ssl.html#ssl-certificates">Certificates</a> for more information on how the certificate is stored in the <em>certfile</em>.</p>
+</blockquote>
+<p>怀疑为证书、密钥格式非<code>.pem</code>, 更改后依旧.</p>
+<ul>
+<li>最终解决方案</li>
+</ul>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta prompt_"># </span><span class="language-bash">file: vpnclient.py</span></span><br><span class="line"><span class="meta prompt_"></span></span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">cadir = <span class="string">&#x27;/volumes/crt/client-certs&#x27;</span> <span class="comment"># directory of the client certificates</span></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">cadir = <span class="string">&#x27;/volumes/crt/client-certs/ca.crt&#x27;</span></span></span><br><span class="line">---</span><br><span class="line"><span class="meta prompt_"># </span><span class="language-bash">context.load_verify_locations(capath=cadir) <span class="comment"># load the client certificates</span></span></span><br><span class="line"><span class="meta prompt_">-&gt; </span><span class="language-bash">context.load_verify_locations(cadir)</span></span><br></pre></td></tr></table></figure>
+<h3 id="用户身份认证">用户身份认证</h3>
+<p>自然的, 我们希望通过账密的方式指定可以通过VPN通信的人群. 在Linux系统中, <code>/etc/shadow</code>是用于加密存储系统用户的账密数据的文件夹. 由于其在python中有现成的接口, 我们暂时使用shadow. 官方文档 <a target="_blank" rel="noopener" href="https://docs.python.org/3/library/spwd.html">spwd— The shadow password database</a> 供参考.</p>
+<p>打开其需要根用户权限, docker镜像中内容展示如下.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">root:$6$VEWO.HXf4wqoiV72$qW/tMr.vGz5CWy3aYmwD1gsPWoaH/BrM0EbwqC.tp1TNCxlUzAHHO1NhEqh34..62gUQT7/MGHmBjiyUvFNW&gt;</span><br><span class="line">daemon:*:18572:0:99999:7:::</span><br><span class="line">bin:*:18572:0:99999:7:::</span><br><span class="line">sys:*:18572:0:99999:7:::</span><br><span class="line">sync:*:18572:0:99999:7:::</span><br><span class="line">...</span><br><span class="line">telnetd:*:18592:0:99999:7:::</span><br><span class="line">seed:$6$yTBl8xUk1t0w0Nk4$D18nT0CT4KxPnoXo2P2Bpr66en.2.NzAmuzvLMjegiT3L8R5/Nqc8u.Q/.IfOEEfON7dKN8TbQH1ThkMpTWQ&gt;</span><br></pre></td></tr></table></figure>
+<p>我们使用预置的<code>seed</code>用户, 其密码为<code>dees</code>验证程序.</p>
+<h3 id="加密通信验证">加密通信验证</h3>
+<p>打开Wireshark捕获数据包, 我们如前所述验证用户身份.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">root@010a94c9a7e6:/volumes# vpnserver.py</span><br><span class="line">Interface Name: servertun0</span><br><span class="line">Enter PEM pass phrase:</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Preparation <span class="keyword">done</span>.</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; 10.9.0.5 new connection</span></span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; 10.9.0.5 login succeed</span></span><br><span class="line">---</span><br><span class="line">root@9fa4cff8127f:/volumes# vpnclient.py</span><br><span class="line">Server hostname: vpn.com</span><br><span class="line">Interface Name: hexfantun0</span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Preparation <span class="keyword">done</span>.</span></span><br><span class="line">Input username: seed</span><br><span class="line">Input password: </span><br><span class="line"><span class="meta prompt_">&gt;</span><span class="language-bash">&gt;&gt; Login succeed</span></span><br></pre></td></tr></table></figure>
+<p>登录成功, 至此两终端均陷入阻塞. 查看结果, 可以看到TSL握手的全过程.</p>
+<figure>
+<img data-src="image-20231114130623984.png" alt="image-20231114130623984" /><figcaption aria-hidden="true">image-20231114130623984</figcaption>
+</figure>
+<p>这与如下TLS握手过程对应, 说明我们已经完成了TLS连接的建立.</p>
+<p><img data-src="image-20231114162033741.png" alt="scale=" style="zoom:50%;" /></p>
+<p>我们尝试验证加密通信内容. 这只需要保持既有的<code>vpnserver.py</code>与<code>vpnclient.py</code>继续运转, 而后另外新建代码文件直接实现HostU与HostV的通信. 此时我们无需考虑网络因素, 直接实现最简单的回声通信, 而后将其在各镜像中运行即可.</p>
+<figure>
+<img data-src="image-20231114180133220.png" alt="image-20231114180133220" /><figcaption aria-hidden="true">image-20231114180133220</figcaption>
+</figure>
+<p>运行结果如上, 可以看到通讯正常. 我们抓取一通信数据包, 可以看到其中数据已被加密.</p>
+<p><img data-src="image-20231114180301623.png" alt="image-20231114180301623" />我们可以试着将私钥导入Wireshark直接解码, 具体请参考<a target="_blank" rel="noopener" href="https://wiki.wireshark.org/TLS">Wireshark-TLS</a> 中的TLS Decryption.</p>
+<p>至此, 我们的项目主体部分业已完成. 接下来我们为其构建GUI界面.</p>
+<h2 id="gui界面设置">GUI界面设置</h2>
+<p>只需要一个简单的图形界面即可, 用户通过界面应当可以实现如下配置.</p>
+<ul>
+<li>用户身份验证</li>
+<li>加密、解密模式设置</li>
+<li>设置接受信息主机地址</li>
+<li>编辑、发送信息</li>
+</ul>
+<p>Docker容器是通过命令行同我们交互的, 我们需要在docker容器中产生图形界面, 这比较困难. 我们该如何实现呢？</p>
+<ol type="1">
+<li><p>使用内置于python的Tkinder产生GUI, 容器中的图形界面可以转发到主机显示屏上.</p></li>
+<li><p>在容器内建立webserver, 发布网页. 在虚拟机中访问网页实现交互.</p></li>
+</ol>
+<p>使用方法1需要将docker网络模式改为<code>host</code>, 为了模拟网络, 我们需要保持网桥<code>br</code>模式. 使用方法2需要重新新建webserver, 建立客户端与服务器的通信交互, 亿点点工作量. 用docker做好麻烦😢😢...</p>
+<p>为避免这些困难, 我们转变思路, 直接通过GUI控制Docker网络的构建过程. 我们使用PyQt5实现GUI, 交互逻辑如下.</p>
+<ul>
+<li>运行程序</li>
+<li>用户登录界面</li>
+<li>通信设置界面
+<ul>
+<li>是否打开加密模式</li>
+<li>设置通话对象</li>
+</ul></li>
+<li>通话界面-实现聊天框</li>
+</ul>
+<h3 id="gui编程与代码重构">GUI编程与代码重构</h3>
+<p>首先安装PyQT5.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">hexufan@hexufan-virtual-machine:~$ pip install PyQt5</span><br><span class="line">Defaulting to user installation because normal site-packages is not writeable</span><br><span class="line">Looking in indexes: https://pypi.tuna.tsinghua.edu.cn/simple</span><br><span class="line">Collecting PyQt5</span><br><span class="line">  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/2f/e6/a1f9853e4933c312c6de9c79d126c7d92ef69ae0e53895fb1ceb0ecc77a6/PyQt5-5.15.10-cp37-abi3-manylinux_2_17_x86_64.whl (8.2 MB)</span><br><span class="line">     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 8.2/8.2 MB 3.5 MB/s eta 0:00:00</span><br><span class="line">Collecting PyQt5-Qt5&gt;=5.15.2</span><br><span class="line">  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/83/d4/241a6a518d0bcf0a9fcdcbad5edfed18d43e884317eab8d5230a2b27e206/PyQt5_Qt5-5.15.2-py3-none-manylinux2014_x86_64.whl (59.9 MB)</span><br><span class="line">     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 59.9/59.9 MB 2.8 MB/s eta 0:00:00</span><br><span class="line">Collecting PyQt5-sip&lt;13,&gt;=12.13</span><br><span class="line">  Downloading https://pypi.tuna.tsinghua.edu.cn/packages/c9/d5/2537affe91240214b4b84616ef6abe545bca6a56302280cad5e08062b23b/PyQt5_sip-12.13.0-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.whl (338 kB)</span><br><span class="line">     ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ 338.1/338.1 KB 8.4 MB/s eta 0:00:00</span><br><span class="line">Installing collected packages: PyQt5-Qt5, PyQt5-sip, PyQt5</span><br><span class="line">Successfully installed PyQt5-5.15.10 PyQt5-Qt5-5.15.2 PyQt5-sip-12.13.0</span><br></pre></td></tr></table></figure>
+<p>其中, 我们想实现在python代码中调用外部命令操纵容器, 代码如下.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec &lt;container_id_or_name&gt; &lt;path_to_script&gt;</span><br></pre></td></tr></table></figure>
+<p>我们如前述将本由我们手动输入的命令行转变为python自动运行, 此处与子进程交互, 我们使用<code>subprocess</code>中的<code>popen</code>. 此函数的详细说明请见<a target="_blank" rel="noopener" href="https://docs.python.org/3/library/subprocess.html#subprocess.Popen">docs.python.org</a> .</p>
+<h3 id="注意事项-1">注意事项</h3>
+<ul>
+<li><p>请注意在服务器与客户端vpn程序运行时稍稍推迟时间, 否则会出现混乱, 如下图所示.</p>
+<figure>
+<img data-src="image-20231116143734661.png" alt="image-20231116143734661" /><figcaption aria-hidden="true">image-20231116143734661</figcaption>
+</figure>
+<p>使用<code>sleep</code>是个不错的选择.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> time</span><br><span class="line">time.sleep(<span class="number">0.5</span>)</span><br></pre></td></tr></table></figure></li>
+<li><p>我们于Python脚本中运行的某些系统命令相当费事, 因此我们使用<code>wait()</code>. 当我们使用<code>shell</code>参数时就可直接使用字符串形式的命令, 免去麻烦. 但这样做会导致进程不等待子进程结束就进行, 请见<a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/6341358/subprocess-wait-not-waiting-for-popen-process-to-finish-when-using-threads">stackoverflow.com</a> .</p>
+<blockquote>
+<p>Sadly when running your subprocess using <code>shell=True</code>, <a target="_blank" rel="noopener" href="http://docs.python.org/library/subprocess.html#subprocess.Popen.wait"><code>wait(</code>)</a> will only wait for the <code>sh</code> subprocess to finish and not for the command <code>cmd</code>.</p>
+<p>I will suggest if it possible to don't use the <code>shell=True</code>, if not possible you can create a process group like in this <a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/4789837/how-to-terminate-a-python-subprocess-launched-with-shell-true/4791612#4791612">answer</a> and use <a target="_blank" rel="noopener" href="http://docs.python.org/library/os.html#os.waitpid">os.waitpid</a> to wait for the process group not just the shell process.</p>
+<p>Hope this was helpful :)</p>
+</blockquote>
+<p>某些时候我们的命令必须置于shell中执行, 如下所示. 🤔🤔🤔</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker stop $(docker ps -aq) &amp;&amp; docker rm $(docker ps -aq)</span><br></pre></td></tr></table></figure></li>
+</ul>
+<h3 id="效果演示">效果演示</h3>
+<p>打开代码文件夹<code>_VPNCode</code>, 内容如下所示.</p>
+<blockquote>
+<p>├── docker-compose.yml └── volumes ├── crt │ ├── ca.key │ ├── client-certs │ │ ├── 11719d94 -&gt; ca.crt │ │ └── ca.crt │ ├── demoCA │ │ ├── certs │ │ ├── crl │ │ ├── index.txt │ │ ├── index.txt.attr │ │ ├── index.txt.old │ │ ├── newcerts │ │ │ └── 1000.pem │ │ ├── serial │ │ └── serial.old │ ├── indext.txt │ ├── my_openssl.cnf │ ├── serial │ ├── server-certs │ │ ├── vpn.key │ │ └── vpn.pem │ ├── vpn.crt │ ├── vpn.csr │ └── vpn.key ├── main.py ├── os_operation.py ├── page_config.py ├── page_dialog.py ├── page_login.py ├── <strong>pycache</strong> │ ├── configpage.cpython-310.pyc │ ├── login.cpython-310.pyc │ ├── os_operation.cpython-310.pyc │ ├── page_config.cpython-310.pyc │ ├── page_dialog.cpython-310.pyc │ └── page_login.cpython-310.pyc ├── unencrypted_client.py ├── unencrypted_server.py ├── u.py ├── vpnclient.py ├── vpnserver.py └── v.py</p>
+<p>9 directories, 35 files</p>
+</blockquote>
+<p>我们运行<code>main.py</code>.</p>
+<h4 id="登录界面">登录界面</h4>
+<p>界面如下图所示.</p>
+<figure>
+<img data-src="image-20231117001522574.png" alt="image-20231117001522574" /><figcaption aria-hidden="true">image-20231117001522574</figcaption>
+</figure>
+<ul>
+<li><p>设置输入账密后才可点击<code>Log in</code>.</p></li>
+<li><p>完成输入后按下<code>ENTER</code>键即可登录.</p></li>
+<li><p>消息页面</p>
+<ul>
+<li><p>错误账密消息页面</p>
+<figure>
+<img data-src="image-20231117001725816.png" alt="image-20231117001725816" /><figcaption aria-hidden="true">image-20231117001725816</figcaption>
+</figure></li>
+<li><p>正确账密消息页面</p>
+<figure>
+<img data-src="image-20231117002026673.png" alt="image-20231117002026673" /><figcaption aria-hidden="true">image-20231117002026673</figcaption>
+</figure></li>
+</ul></li>
+</ul>
+<h4 id="vpn设置界面">VPN设置界面</h4>
+<p>如图所示.</p>
+<figure>
+<img data-src="image-20231117002120567.png" alt="image-20231117002120567" /><figcaption aria-hidden="true">image-20231117002120567</figcaption>
+</figure>
+<ul>
+<li>是否打开加密通信模式</li>
+<li>是否打开代理模式</li>
+<li>测试网络通信-输入网址<code>ping</code>测试可达性.</li>
+<li>打开代理后无法调整加密模式.</li>
+</ul>
+<h4 id="未开启vpn时连通性测试">未开启VPN时连通性测试</h4>
+<p>我们输入Host V <code>192.168.60.5</code>, 而后点击<code>ping</code>.</p>
+<figure>
+<img data-src="image-20231117002355106.png" alt="image-20231117002355106" /><figcaption aria-hidden="true">image-20231117002355106</figcaption>
+</figure>
+<p>返回结果如图所示, 无法联通.</p>
+<figure>
+<img data-src="image-20231117002609576.png" alt="image-20231117002609576" /><figcaption aria-hidden="true">image-20231117002609576</figcaption>
+</figure>
+<h4 id="加密模式通信测试">加密模式通信测试</h4>
+<p>我们打开代理模式, 请注意打开时部署网络需要一定的时间.</p>
+<figure>
+<img data-src="image-20231117002825254.png" alt="image-20231117002825254" /><figcaption aria-hidden="true">image-20231117002825254</figcaption>
+</figure>
+<p>可以连通. 预先打开Wireshark抓包, 可以看到TLS加密数据包.</p>
+<h4 id="关闭vpn代理模式">关闭VPN代理模式</h4>
+<p>请注意, 此过程亦耗时较长.</p>
+<figure>
+<img data-src="image-20231117003001364.png" alt="image-20231117003001364" /><figcaption aria-hidden="true">image-20231117003001364</figcaption>
+</figure>
+<p>等待片刻后, 弹窗提示容器均已移除.</p>
+<figure>
+<img data-src="image-20231117003112769.png" alt="image-20231117003112769" /><figcaption aria-hidden="true">image-20231117003112769</figcaption>
+</figure>
+<h4 id="未加密模式通信测试">未加密模式通信测试</h4>
+<p>如前所述, 我们关闭加密模式, 再打开代理即可.</p>
+<figure>
+<img data-src="image-20231117003230859.png" alt="image-20231117003230859" /><figcaption aria-hidden="true">image-20231117003230859</figcaption>
+</figure>
+<p>弹窗提示未加密VPN代理依然打开.</p>
+<figure>
+<img data-src="image-20231117003313497.png" alt="image-20231117003313497" /><figcaption aria-hidden="true">image-20231117003313497</figcaption>
+</figure>
+<p>同样测试, 可以连通.</p>
+<p>关闭VPN.</p>
+<figure>
+<img data-src="image-20231117003445730.png" alt="image-20231117003445730" /><figcaption aria-hidden="true">image-20231117003445730</figcaption>
+</figure>
+<p>会有消息窗口提示containers已经全部删除.</p>
+<figure>
+<img data-src="image-20231117003528380.png" alt="image-20231117003528380" /><figcaption aria-hidden="true">image-20231117003528380</figcaption>
+</figure>
+<p>历时约三周, 其实最后有很多地方都是比较糊弄地过去了. 但是</p>
+<p>完结撒花<em>★,°</em>:.☆(￣▽￣)/$:<em>.°★</em> .</p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/VPN/" rel="tag"># VPN</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item"></div>
+      <div class="post-nav-item">
+    <a href="/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/" rel="next" title="在Python中使用Epoll通信">
+      在Python中使用Epoll通信 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#build-a-vpn-from-scratch"><span class="nav-number">1.</span> <span class="nav-text">Build a VPN from scratch</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E9%A1%B9%E7%9B%AE%E8%A6%81%E6%B1%82"><span class="nav-number">1.1.</span> <span class="nav-text">项目要求</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.2.</span> <span class="nav-text">实验环境配置</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%89%8D%E7%BD%AE%E7%9F%A5%E8%AF%86"><span class="nav-number">1.3.</span> <span class="nav-text">前置知识</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BD%91%E7%BB%9C%E7%8E%AF%E5%A2%83%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.</span> <span class="nav-text">网络环境配置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AE%9E%E9%AA%8C%E7%8E%AF%E5%A2%83%E7%9A%84%E9%85%8D%E7%BD%AE"><span class="nav-number">1.4.1.</span> <span class="nav-text">实验环境的配置</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#docker%E7%BD%91%E7%BB%9C%E7%9A%84%E5%85%B3%E9%97%AD"><span class="nav-number">1.4.2.</span> <span class="nav-text">Docker网络的关闭</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="nav-number">1.4.3.</span> <span class="nav-text">注意事项</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%A3%E7%A0%81%E8%BF%81%E7%A7%BB"><span class="nav-number">1.4.3.1.</span> <span class="nav-text">代码迁移</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E8%99%9A%E6%8B%9F%E6%9C%BA%E7%BD%91%E7%BB%9C%E9%97%AE%E9%A2%98"><span class="nav-number">1.4.3.2.</span> <span class="nav-text">虚拟机网络问题</span></a></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%AE%80%E5%8D%95vpn%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.5.</span> <span class="nav-text">简单VPN设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#step-1-%E8%AE%BE%E7%BD%AE%E5%AE%A2%E6%88%B7%E7%AB%AFtun%E6%8E%A5%E5%8F%A3"><span class="nav-number">1.5.1.</span> <span class="nav-text">Step 1 设置客户端TUN接口</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%88%9B%E5%BB%BAtun"><span class="nav-number">1.5.1.1.</span> <span class="nav-text">创建TUN</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BB%8Etun%E8%AF%BB%E5%8F%96%E6%95%B0%E6%8D%AE"><span class="nav-number">1.5.1.2.</span> <span class="nav-text">从TUN读取数据</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%90%91tun%E5%86%99%E5%85%A5%E6%95%B0%E6%8D%AE"><span class="nav-number">1.5.1.3.</span> <span class="nav-text">向TUN写入数据</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#step-2-%E5%AE%9E%E7%8E%B0%E5%AE%A2%E6%88%B7%E7%AB%AF%E4%B8%8E%E6%9C%8D%E5%8A%A1%E5%99%A8%E9%97%B4%E7%9A%84tunnel%E9%80%9A%E4%BF%A1"><span class="nav-number">1.5.2.</span> <span class="nav-text">Step 2 实现客户端与服务器间的Tunnel通信</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8D%95%E5%90%91%E9%80%9A%E4%BF%A1"><span class="nav-number">1.5.2.1.</span> <span class="nav-text">单向通信</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8F%8C%E5%90%91%E9%80%9A%E4%BF%A1"><span class="nav-number">1.5.2.2.</span> <span class="nav-text">双向通信</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#%E8%BF%9E%E9%80%9A%E5%AD%90%E7%BD%91%E4%B8%BB%E6%9C%BAhost-v"><span class="nav-number">1.5.2.2.1.</span> <span class="nav-text">连通子网主机Host V</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8F%8C%E5%90%91%E9%80%9A%E4%BF%A1"><span class="nav-number">1.5.2.2.2.</span> <span class="nav-text">实现双向通信</span></a></li></ol></li></ol></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1"><span class="nav-number">1.6.</span> <span class="nav-text">加密通信</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%88%9B%E5%BB%BA%E8%87%AA%E7%AD%BE%E5%90%8Dca"><span class="nav-number">1.6.1.</span> <span class="nav-text">创建自签名CA</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%88%9B%E5%BB%BA%E8%AF%81%E4%B9%A6%E7%94%B3%E8%AF%B7"><span class="nav-number">1.6.2.</span> <span class="nav-text">为服务器创建证书申请</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%80%9A%E8%BF%87ca%E4%B8%BA%E7%94%B3%E8%AF%B7%E7%BD%B2%E5%90%8D"><span class="nav-number">1.6.3.</span> <span class="nav-text">通过CA为申请署名</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#debug%E8%AE%B0%E5%BD%95"><span class="nav-number">1.6.4.</span> <span class="nav-text">DEBUG记录</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%94%A8%E6%88%B7%E8%BA%AB%E4%BB%BD%E8%AE%A4%E8%AF%81"><span class="nav-number">1.6.5.</span> <span class="nav-text">用户身份认证</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8A%A0%E5%AF%86%E9%80%9A%E4%BF%A1%E9%AA%8C%E8%AF%81"><span class="nav-number">1.6.6.</span> <span class="nav-text">加密通信验证</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#gui%E7%95%8C%E9%9D%A2%E8%AE%BE%E7%BD%AE"><span class="nav-number">1.7.</span> <span class="nav-text">GUI界面设置</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#gui%E7%BC%96%E7%A8%8B%E4%B8%8E%E4%BB%A3%E7%A0%81%E9%87%8D%E6%9E%84"><span class="nav-number">1.7.1.</span> <span class="nav-text">GUI编程与代码重构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-1"><span class="nav-number">1.7.2.</span> <span class="nav-text">注意事项</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%88%E6%9E%9C%E6%BC%94%E7%A4%BA"><span class="nav-number">1.7.3.</span> <span class="nav-text">效果演示</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E7%99%BB%E5%BD%95%E7%95%8C%E9%9D%A2"><span class="nav-number">1.7.3.1.</span> <span class="nav-text">登录界面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#vpn%E8%AE%BE%E7%BD%AE%E7%95%8C%E9%9D%A2"><span class="nav-number">1.7.3.2.</span> <span class="nav-text">VPN设置界面</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AA%E5%BC%80%E5%90%AFvpn%E6%97%B6%E8%BF%9E%E9%80%9A%E6%80%A7%E6%B5%8B%E8%AF%95"><span class="nav-number">1.7.3.3.</span> <span class="nav-text">未开启VPN时连通性测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%8A%A0%E5%AF%86%E6%A8%A1%E5%BC%8F%E9%80%9A%E4%BF%A1%E6%B5%8B%E8%AF%95"><span class="nav-number">1.7.3.4.</span> <span class="nav-text">加密模式通信测试</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%85%B3%E9%97%ADvpn%E4%BB%A3%E7%90%86%E6%A8%A1%E5%BC%8F"><span class="nav-number">1.7.3.5.</span> <span class="nav-text">关闭VPN代理模式</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%9C%AA%E5%8A%A0%E5%AF%86%E6%A8%A1%E5%BC%8F%E9%80%9A%E4%BF%A1%E6%B5%8B%E8%AF%95"><span class="nav-number">1.7.3.6.</span> <span class="nav-text">未加密模式通信测试</span></a></li></ol></li></ol></li></ol></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="hefan"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">hefan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hefan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>

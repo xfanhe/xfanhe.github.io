@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon_1.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32_1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16_1.png">
+  <link rel="mask-icon" href="/images/android-chrome-512x512_1.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Tutte Embedding 网格参数化">
+<meta property="og:url" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/index.html">
+<meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="框架分析 有函数  readObj(); findBoundary(); drawmesh();  三者作用均可望文生义. 关于输入输出，讨论如下.">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108201317435.png">
+<meta property="og:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108225519248.png">
+<meta property="article:published_time" content="2024-01-08T12:06:07.000Z">
+<meta property="article:modified_time" content="2024-01-08T15:15:29.378Z">
+<meta property="article:author" content="hefan">
+<meta property="article:tag" content="Computer Graphics">
+<meta property="article:tag" content="曲面参数化">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/image-20240108201317435.png">
+
+<link rel="canonical" href="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>Tutte Embedding 网格参数化 | Fan's Page</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fan's Page</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/08/Tutte-Embedding-%E7%BD%91%E6%A0%BC%E5%8F%82%E6%95%B0%E5%8C%96/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Tutte Embedding 网格参数化
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-01-08 20:06:07 / Modified: 23:15:29" itemprop="dateCreated datePublished" datetime="2024-01-08T20:06:07+08:00">2024-01-08</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <h2 id="框架分析">框架分析</h2>
+<p>有函数</p>
+<ul>
+<li>readObj();</li>
+<li>findBoundary();</li>
+<li>drawmesh();</li>
+</ul>
+<p>三者作用均可望文生义. 关于输入输出，讨论如下.</p>
+<span id="more"></span>
+<ol type="1">
+<li><p>findBoundary();</p>
+<p>输出变量 B 和 H.</p>
+<blockquote>
+<p>B - list of boundary vertex ID's in CCW order</p>
+</blockquote>
+<p>此处CCW order 不是是否为 ClockWise order? 文献中算法要求Anti-clockwise order.</p>
+<p>H 未见说明，对.obj文件使用后为空.</p></li>
+<li><p>drawmesh();</p>
+<p>完全没有解释. 根据代码推断可知</p>
+<blockquote>
+<p>color: 网格面颜色.</p>
+<p>ecolor: 网格边颜色.</p>
+</blockquote>
+<p>直接尝试使用 readobj 得到的数据. 发现 t 为网格面，x 为网格顶点.</p>
+<p><img data-src="image-20240108201317435.png" alt="image-20240108201317435" style="zoom:50%;" /></p></li>
+</ol>
+<h2 id="tutte-embedding-算法实现">Tutte Embedding 算法实现</h2>
+<h3 id="算法思路">算法思路</h3>
+<p>我们首先需要将边界的顶点依照逆时针序对应到某二维图形上去. 我们先选取单位圆.</p>
+<ul>
+<li><p>需要求得每个边界顶点在此二维平面的坐标.</p></li>
+<li><p>需要知道某内部顶点的相邻顶点<span class="math inline">\(V_i\)</span>个数</p>
+<ul>
+<li>若<span class="math inline">\(V_i\)</span>为界点 -&gt; rhs - <span class="math inline">\(u_i/v_i\)</span>.</li>
+<li>若<span class="math inline">\(V_i\)</span>为内点 -&gt; 此行对应列赋为-1.</li>
+</ul></li>
+<li><p>将二维平面坐标传</p></li>
+<li><p>参给 drawmesh() 即可.</p></li>
+</ul>
+<h3 id="算法实现">算法实现</h3>
+<p>选取单位圆，我们根据角度给界点坐标赋值. 这是很方便的.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">BoundaryVertices = BoundaryVertices&#x27;;</span><br><span class="line">num = <span class="built_in">size</span>(BoundaryVertices,<span class="number">1</span>);</span><br><span class="line">unitDegree = <span class="number">2</span>*<span class="built_in">pi</span>/num;</span><br><span class="line">BoundaryVertices = [BoundaryVertices,<span class="built_in">zeros</span>(num,<span class="number">2</span>)];</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:num</span><br><span class="line">    degree = unitDegree*(<span class="built_in">i</span><span class="number">-1</span>);</span><br><span class="line">    BoundaryVertices(<span class="built_in">i</span>,<span class="number">2</span>) = <span class="built_in">cos</span>(degree);</span><br><span class="line">    BoundaryVertices(<span class="built_in">i</span>,<span class="number">3</span>) = <span class="built_in">sin</span>(degree);</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>给定顶点，我们需要知道其临近界点. 注意到只要同处一个面，任意两个点均是邻近的.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">function</span> <span class="title">adjacentPoints</span> = <span class="title">findAdjacent</span><span class="params">(vertex, facet)</span></span></span><br><span class="line">adjacentPoints = [];</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="built_in">size</span>(facet,<span class="number">1</span>)</span><br><span class="line">    temp = facet(<span class="built_in">i</span>,:)&#x27;;</span><br><span class="line">    flag = <span class="built_in">false</span>;</span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">j</span> = <span class="number">1</span>:<span class="number">3</span></span><br><span class="line">        <span class="keyword">if</span> vertex == facet(<span class="built_in">i</span>,<span class="built_in">j</span>)</span><br><span class="line">            flag = <span class="built_in">true</span>;</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">if</span> flag</span><br><span class="line">        adjacentPoints = [adjacentPoints;temp];</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    adjacentPoints = unique(adjacentPoints);</span><br><span class="line">    adjacentPoints = adjacentPoints(~<span class="built_in">ismember</span>(adjacentPoints,vertex));</span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>注意需要除去该顶点本身.</p>
+<p>而后我们构造方程组. 这里为了方便，我们对顶点是否为界点做了标注.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 标注是否界点</span></span><br><span class="line">vertices = [vertices,<span class="built_in">zeros</span>(<span class="built_in">size</span>(vertices,<span class="number">1</span>),<span class="number">1</span>)];</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:num</span><br><span class="line">    vertices(BoundaryVertices(<span class="built_in">i</span>,<span class="number">1</span>),<span class="number">4</span>) = <span class="built_in">nan</span>;</span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">num = <span class="number">0</span>;</span><br><span class="line"><span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="built_in">size</span>(vertices,<span class="number">1</span>)</span><br><span class="line">    <span class="keyword">if</span> ~<span class="built_in">isnan</span>(vertices(<span class="built_in">i</span>,<span class="number">4</span>))</span><br><span class="line">        num = num+<span class="number">1</span>;</span><br><span class="line">        vertices(<span class="built_in">i</span>,<span class="number">4</span>) = num;</span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br></pre></td></tr></table></figure>
+<p>同时，对内点进行了编号以便索引. 分别对俩个维度的坐标求解后，将坐标替换成方程组的解.</p>
+<figure class="highlight matlab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">% 查找给定顶点的邻近顶点</span></span><br><span class="line"><span class="comment">% 二维坐标</span></span><br><span class="line"><span class="keyword">for</span> corrdinate = <span class="number">1</span>:<span class="number">2</span></span><br><span class="line">    coef = <span class="built_in">zeros</span>(num,num);</span><br><span class="line">    rhs = <span class="built_in">zeros</span>(num,<span class="number">1</span>);</span><br><span class="line">    <span class="comment">% 第 i 个内点</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:num</span><br><span class="line">        <span class="comment">% 查找第i个内点对应序列号</span></span><br><span class="line">        [cols,~] = <span class="built_in">find</span>(vertices(:,<span class="number">4</span>)==<span class="built_in">i</span>);</span><br><span class="line">        adjacentPoints = findAdjacent(cols, facet);</span><br><span class="line">        adjaNum = <span class="built_in">size</span>(adjacentPoints,<span class="number">1</span>);</span><br><span class="line">        coef(<span class="built_in">i</span>,<span class="built_in">i</span>) = adjaNum;</span><br><span class="line">        <span class="keyword">for</span> <span class="built_in">j</span> = <span class="number">1</span>:adjaNum</span><br><span class="line">            orderNum = adjacentPoints(<span class="built_in">j</span>,<span class="number">1</span>);</span><br><span class="line">            <span class="comment">% 查找内点序号</span></span><br><span class="line">            interiorNum = vertices(orderNum,<span class="number">4</span>);</span><br><span class="line">            <span class="comment">% 若为界点</span></span><br><span class="line">            <span class="keyword">if</span> <span class="built_in">isnan</span>(interiorNum)</span><br><span class="line">                [cols,~] = <span class="built_in">find</span>(BoundaryVertices(:,<span class="number">1</span>)==orderNum);</span><br><span class="line">                rhs(<span class="built_in">i</span>) = rhs(<span class="built_in">i</span>)+BoundaryVertices(cols,corrdinate+<span class="number">1</span>);</span><br><span class="line">            <span class="comment">% 内点</span></span><br><span class="line">            <span class="keyword">else</span></span><br><span class="line">                coef(<span class="built_in">i</span>,interiorNum) = <span class="number">-1</span>;</span><br><span class="line">            <span class="keyword">end</span></span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line">    <span class="comment">% 求解</span></span><br><span class="line">    R = chol(coef);</span><br><span class="line">    x = R\(R&#x27;\rhs);</span><br><span class="line">    <span class="comment">% 赋值</span></span><br><span class="line">    <span class="keyword">for</span> <span class="built_in">i</span> = <span class="number">1</span>:<span class="built_in">size</span>(vertices,<span class="number">1</span>)</span><br><span class="line">        <span class="keyword">if</span> ~<span class="built_in">isnan</span>(vertices(<span class="built_in">i</span>,<span class="number">4</span>))</span><br><span class="line">            vertices(<span class="built_in">i</span>,corrdinate) = x(vertices(<span class="built_in">i</span>,<span class="number">4</span>),<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">            [cols,~] = <span class="built_in">find</span>(BoundaryVertices(:,<span class="number">1</span>)==<span class="built_in">i</span>);</span><br><span class="line">            vertices(<span class="built_in">i</span>,corrdinate) = BoundaryVertices(cols,corrdinate+<span class="number">1</span>);</span><br><span class="line">        <span class="keyword">end</span></span><br><span class="line">    <span class="keyword">end</span></span><br><span class="line"><span class="keyword">end</span></span><br><span class="line">vertices = vertices(:,<span class="number">1</span>:<span class="number">2</span>);</span><br></pre></td></tr></table></figure>
+<p>这就完成了算法.</p>
+<h2 id="结果">结果</h2>
+<p>结果展示如下.</p>
+<p><img data-src="image-20240108225519248.png" alt="image-20240108225519248" style="zoom:50%;" /></p>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/Computer-Graphics/" rel="tag"># Computer Graphics</a>
+              <a href="/tags/%E6%9B%B2%E9%9D%A2%E5%8F%82%E6%95%B0%E5%8C%96/" rel="tag"># 曲面参数化</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" rel="prev" title="Possion Image Editing SIGGRAPH 2003 代码实现">
+      <i class="fa fa-chevron-left"></i> Possion Image Editing SIGGRAPH 2003 代码实现
+    </a></div>
+      <div class="post-nav-item">
+    <a href="/2024/01/25/GAMES101-%E4%BD%9C%E4%B8%9A5/" rel="next" title="GAMES101-作业5">
+      GAMES101-作业5 <i class="fa fa-chevron-right"></i>
+    </a></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A1%86%E6%9E%B6%E5%88%86%E6%9E%90"><span class="nav-number">1.</span> <span class="nav-text">框架分析</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#tutte-embedding-%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.</span> <span class="nav-text">Tutte Embedding 算法实现</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E6%80%9D%E8%B7%AF"><span class="nav-number">2.1.</span> <span class="nav-text">算法思路</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%AE%97%E6%B3%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">2.2.</span> <span class="nav-text">算法实现</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%BB%93%E6%9E%9C"><span class="nav-number">3.</span> <span class="nav-text">结果</span></a></li></ol></div>
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="hefan"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">hefan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">9</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hefan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
