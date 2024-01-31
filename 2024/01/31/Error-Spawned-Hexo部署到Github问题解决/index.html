@@ -20,18 +20,22 @@
     var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
   </script>
 
-  <meta property="og:type" content="article">
-<meta property="og:title" content="CMake">
-<meta property="og:url" content="http://example.com/2023/12/11/CMake/index.html">
+  <meta name="description" content="奖Hexo博客部署到Github上常常会遇到报错：  FATAL Something&#39;s wrong. Maybe you can find the solution here: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;troubleshooting.html Error: Spawn failed at ChildProcess. (E:_modules-deployer-git_modu">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Error Spawned:Hexo部署到Github问题解决">
+<meta property="og:url" content="http://example.com/2024/01/31/Error-Spawned-Hexo%E9%83%A8%E7%BD%B2%E5%88%B0Github%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/index.html">
 <meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="奖Hexo博客部署到Github上常常会遇到报错：  FATAL Something&#39;s wrong. Maybe you can find the solution here: https:&#x2F;&#x2F;hexo.io&#x2F;docs&#x2F;troubleshooting.html Error: Spawn failed at ChildProcess. (E:_modules-deployer-git_modu">
 <meta property="og:locale" content="en_US">
-<meta property="article:published_time" content="2023-12-11T01:51:40.000Z">
-<meta property="article:modified_time" content="2023-12-11T02:44:05.107Z">
+<meta property="og:image" content="http://example.com/2024/01/31/Error-Spawned-Hexo%E9%83%A8%E7%BD%B2%E5%88%B0Github%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/image-20240131155545289.png">
+<meta property="article:published_time" content="2024-01-31T07:49:51.000Z">
+<meta property="article:modified_time" content="2024-01-31T08:01:58.581Z">
 <meta property="article:author" content="hefan">
-<meta property="article:tag" content="CMake">
+<meta property="article:tag" content="Hexo">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2024/01/31/Error-Spawned-Hexo%E9%83%A8%E7%BD%B2%E5%88%B0Github%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/image-20240131155545289.png">
 
-<link rel="canonical" href="http://example.com/2023/12/11/CMake/">
+<link rel="canonical" href="http://example.com/2024/01/31/Error-Spawned-Hexo%E9%83%A8%E7%BD%B2%E5%88%B0Github%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/">
 
 
 <script id="page-configurations">
@@ -44,7 +48,7 @@
   };
 </script>
 
-  <title>CMake | Fan's Page</title>
+  <title>Error Spawned:Hexo部署到Github问题解决 | Fan's Page</title>
   
 
 
@@ -159,7 +163,7 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/12/11/CMake/">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/01/31/Error-Spawned-Hexo%E9%83%A8%E7%BD%B2%E5%88%B0Github%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.jpg">
@@ -172,7 +176,7 @@
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          CMake
+          Error Spawned:Hexo部署到Github问题解决
         </h1>
 
         <div class="post-meta">
@@ -183,7 +187,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2023-12-11 09:51:40 / Modified: 10:44:05" itemprop="dateCreated datePublished" datetime="2023-12-11T09:51:40+08:00">2023-12-11</time>
+              <time title="Created: 2024-01-31 15:49:51 / Modified: 16:01:58" itemprop="dateCreated datePublished" datetime="2024-01-31T15:49:51+08:00">2024-01-31</time>
             </span>
 
           
@@ -197,7 +201,27 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        
+        <p>奖Hexo博客部署到Github上常常会遇到报错：</p>
+<blockquote>
+<p>FATAL Something's wrong. Maybe you can find the solution here: https://hexo.io/docs/troubleshooting.html Error: Spawn failed at ChildProcess.<anonymous> (E:_modules-deployer-git_modules-util.js:51:21) at ChildProcess.emit (node:events:514:28) at cp.emit (E:_modules-spawn.js:34:29) at ChildProcess._handle.onexit (node:internal/child_process:294:12)</p>
+</blockquote>
+<p>网络上的一些解决办法时常失效，且治标不治本.</p>
+<!--no more-->
+<h2 id="解决方法">解决方法</h2>
+<p>是SSH密钥出现问题.</p>
+<blockquote>
+<p>$ ssh -T git@github.com ssh: connect to host github.com port 22: Connection timed out</p>
+</blockquote>
+<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out">Stackoverflow</a> 中最高赞方法实测可行.</p>
+<p><img data-src="image-20240131155545289.png" alt="image-20240131155545289" style="zoom:67%;" /></p>
+<p>其中，<code>~/.ssh</code>路径为<code>C:\Users\username\.ssh</code>，于其中新建文件<code>config</code>即可. 笔者采用的是<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_41287260/article/details/124368189">CSDN</a>中给出的文件内容.</p>
+<p>此后在终端输入</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
+<p>会有prompt，肯定即可.</p>
+<blockquote>
+<p>$ ssh -T git@github.com The authenticity of host '[ssh.github.com]:443 ([20.205.243.160]:443)' can't be established. ED25519 key fingerprint is PUBLICKEY. This key is not known by any other names. Are you sure you want to continue connecting (yes/no/[fingerprint])? yes Warning: Permanently added '[ssh.github.com]:443' (ED25519) to the list of known hosts. Hi NAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
+</blockquote>
+<p>大功告成.</p>
 
     </div>
 
@@ -207,7 +231,7 @@
 
       <footer class="post-footer">
           <div class="post-tags">
-              <a href="/tags/CMake/" rel="tag"># CMake</a>
+              <a href="/tags/Hexo/" rel="tag"># Hexo</a>
           </div>
 
         
@@ -216,13 +240,10 @@
         
     <div class="post-nav">
       <div class="post-nav-item">
-    <a href="/2023/12/09/VS%E4%B8%AD%E4%BD%BF%E7%94%A8Qt-Designer%E5%BC%80%E5%8F%91/" rel="prev" title="VS中使用Qt Designer开发">
-      <i class="fa fa-chevron-left"></i> VS中使用Qt Designer开发
+    <a href="/2024/01/25/GAMES101-%E4%BD%9C%E4%B8%9A5/" rel="prev" title="GAMES101-作业5">
+      <i class="fa fa-chevron-left"></i> GAMES101-作业5
     </a></div>
-      <div class="post-nav-item">
-    <a href="/2024/01/04/Possion-Image-Editing-SIGGRAPH-2003-%E4%BB%A3%E7%A0%81%E5%AE%9E%E7%8E%B0/" rel="next" title="Possion Image Editing SIGGRAPH 2003 代码实现">
-      Possion Image Editing SIGGRAPH 2003 代码实现 <i class="fa fa-chevron-right"></i>
-    </a></div>
+      <div class="post-nav-item"></div>
     </div>
       </footer>
     
@@ -281,6 +302,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E8%A7%A3%E5%86%B3%E6%96%B9%E6%B3%95"><span class="nav-number">1.</span> <span class="nav-text">解决方法</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
