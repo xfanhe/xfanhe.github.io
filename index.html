@@ -180,7 +180,7 @@
               <span class="post-meta-item-text">Posted on</span>
               
 
-              <time title="Created: 2024-01-31 15:49:51 / Modified: 16:01:58" itemprop="dateCreated datePublished" datetime="2024-01-31T15:49:51+08:00">2024-01-31</time>
+              <time title="Created: 2024-01-31 15:49:51 / Modified: 16:04:16" itemprop="dateCreated datePublished" datetime="2024-01-31T15:49:51+08:00">2024-01-31</time>
             </span>
 
           
@@ -199,23 +199,14 @@
 <p>FATAL Something's wrong. Maybe you can find the solution here: https://hexo.io/docs/troubleshooting.html Error: Spawn failed at ChildProcess.<anonymous> (E:_modules-deployer-git_modules-util.js:51:21) at ChildProcess.emit (node:events:514:28) at cp.emit (E:_modules-spawn.js:34:29) at ChildProcess._handle.onexit (node:internal/child_process:294:12)</p>
 </blockquote>
 <p>网络上的一些解决办法时常失效，且治标不治本.</p>
-<!--no more-->
-<h2 id="解决方法">解决方法</h2>
-<p>是SSH密钥出现问题.</p>
-<blockquote>
-<p>$ ssh -T git@github.com ssh: connect to host github.com port 22: Connection timed out</p>
-</blockquote>
-<p><a target="_blank" rel="noopener" href="https://stackoverflow.com/questions/15589682/ssh-connect-to-host-github-com-port-22-connection-timed-out">Stackoverflow</a> 中最高赞方法实测可行.</p>
-<p><img data-src="image-20240131155545289.png" alt="image-20240131155545289" style="zoom:67%;" /></p>
-<p>其中，<code>~/.ssh</code>路径为<code>C:\Users\username\.ssh</code>，于其中新建文件<code>config</code>即可. 笔者采用的是<a target="_blank" rel="noopener" href="https://blog.csdn.net/weixin_41287260/article/details/124368189">CSDN</a>中给出的文件内容.</p>
-<p>此后在终端输入</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh -T git@github.com</span><br></pre></td></tr></table></figure>
-<p>会有prompt，肯定即可.</p>
-<blockquote>
-<p>$ ssh -T git@github.com The authenticity of host '[ssh.github.com]:443 ([20.205.243.160]:443)' can't be established. ED25519 key fingerprint is PUBLICKEY. This key is not known by any other names. Are you sure you want to continue connecting (yes/no/[fingerprint])? yes Warning: Permanently added '[ssh.github.com]:443' (ED25519) to the list of known hosts. Hi NAME! You've successfully authenticated, but GitHub does not provide shell access.</p>
-</blockquote>
-<p>大功告成.</p>
-
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/01/31/Error-Spawned-Hexo%E9%83%A8%E7%BD%B2%E5%88%B0Github%E9%97%AE%E9%A2%98%E8%A7%A3%E5%86%B3/#more" rel="contents">
+                Read more &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
       
     </div>
 
