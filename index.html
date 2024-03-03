@@ -155,6 +155,70 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/03/%E4%B8%BA%E5%AF%BC%E5%85%A5Unity%E7%9A%84Texture%E9%A2%84%E8%AE%BE%E6%A0%BC%E5%BC%8F/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/03/%E4%B8%BA%E5%AF%BC%E5%85%A5Unity%E7%9A%84Texture%E9%A2%84%E8%AE%BE%E6%A0%BC%E5%BC%8F/" class="post-title-link" itemprop="url">为导入Unity的Texture预设格式</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-03-03 20:56:30 / Modified: 21:06:57" itemprop="dateCreated datePublished" datetime="2024-03-03T20:56:30+08:00">2024-03-03</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>为了方便大量美术资源导入，我们使用<code>preset</code>实现自动格式设置.</p>
+<p>导入一张图片，设置好相应格式后点击Inspector右上角Slider. 在弹出页面选择新建Preset.</p>
+<p>此时在该Preset的Inspector上方即可<code>Add to TextureImporter default</code>.</p>
+<p>依次打开<code>Edit -&gt; Project Settings -&gt; Present Manager -&gt; Add Default Preset</code>.</p>
+<p>以Texture为例，搜索<code>TextureImporter</code>添加即可.</p>
+<p>此后导入Texture即可自动设置格式.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/02/08/CS106L-Assignment-2-STL-HashMap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -793,86 +857,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/" class="post-title-link" itemprop="url">在Python中使用Epoll通信</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-11-19 12:23:25" itemprop="dateCreated datePublished" datetime="2023-11-19T12:23:25+08:00">2023-11-19</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-11-26 11:33:12" itemprop="dateModified" datetime="2023-11-26T11:33:12+08:00">2023-11-26</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <p>我们已经了解过利用<code>select()</code>实现异步非阻塞通信，该实现方式有如下缺陷。</p>
-<ul>
-<li>执行<code>select()</code>过程中需要对监视套接字不停轮询。</li>
-<li>调用<code>select()</code>时需要向其传递监视套接字信息。</li>
-</ul>
-<p>后者带来的开销是巨大的，因为文件描述符是由OS管理的。这意味着我们的进程需要向操作系统传递数据。这一缺陷可以这样改进：</p>
-<blockquote>
-<p>仅向OS传递一次监视套接字信息，此后仅在发生变化时通知OS。</p>
-</blockquote>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/11/19/%E5%9C%A8Python%E4%B8%AD%E4%BD%BF%E7%94%A8Epoll%E9%80%9A%E4%BF%A1/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -944,14 +928,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">11</span>
+          <span class="site-state-item-count">12</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">8</span>
+        <span class="site-state-item-count">9</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
