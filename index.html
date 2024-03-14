@@ -155,6 +155,82 @@
   
   
   <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/14/C-priority-queue-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          
+            <a href="/2024/03/14/C-priority-queue-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0/" class="post-title-link" itemprop="url">C++ priority_queue 自定义实现</a>
+        </h2>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+              
+
+              <time title="Created: 2024-03-14 20:32:14 / Modified: 20:56:18" itemprop="dateCreated datePublished" datetime="2024-03-14T20:32:14+08:00">2024-03-14</time>
+            </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+          <p>C++的STL中提供了堆的标准实现<code>priority_queue</code>.</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">template</span>&lt;</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">T</span>,</span><br><span class="line">    <span class="keyword">class</span> <span class="title class_">Container</span> = std::vector&lt;T&gt;,</span><br><span class="line">    <span class="keyword">class</span> Compare = std::less&lt;<span class="keyword">typename</span> Container::value_type&gt;</span><br><span class="line">&gt; <span class="keyword">class</span> priority_queue;</span><br></pre></td></tr></table></figure>
+<p>其中参数Container是堆数据实际存储的容器，根据仿函数Compare提供的大小判断规则，可构造大顶堆与小顶堆. STL了预定义的大小比较类.</p>
+<ol type="1">
+<li><p>template&lt; class T &gt; struct less;</p>
+<p>定义了大小比较函数std::less::operator()</p>
+<blockquote>
+<h3 id="parameters">Parameters</h3>
+<p>lhs, rhs - values to compare</p>
+<h3 id="return-value">Return value</h3>
+<p>lhs &lt; rhs.</p>
+</blockquote>
+<p>使用less，可构造大顶堆.</p></li>
+<li><p>template&lt; class T &gt; struct greater;</p>
+<p>相反的，返回lhs &gt; rhs. 可构造小顶堆.</p></li>
+</ol>
+<p>如若为自定义的类对象构造堆，则需要提供对应的比较. 可以是函数对象或布尔函数.</p>
+<p>需要注意的是，less这样的比较会构造大根堆. 其背后逻辑为——若父节点与当前节点满足所定义比较，则上浮.</p>
+
+      
+    </div>
+
+    
+    
+    
+      <footer class="post-footer">
+        <div class="post-eof"></div>
+      </footer>
+  </article>
+  
+  
+  
+
+      
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
     <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/03/%E4%B8%BA%E5%AF%BC%E5%85%A5Unity%E7%9A%84Texture%E9%A2%84%E8%AE%BE%E6%A0%BC%E5%BC%8F/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
@@ -782,81 +858,6 @@
   
   
 
-      
-  
-  
-  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
-    <link itemprop="mainEntityOfPage" href="http://example.com/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.jpg">
-      <meta itemprop="name" content="hefan">
-      <meta itemprop="description" content="">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Fan's Page">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          
-            <a href="/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/" class="post-title-link" itemprop="url">GAMES101 作业3调试记录</a>
-        </h2>
-
-        <div class="post-meta">
-            <span class="post-meta-item">
-              <span class="post-meta-item-icon">
-                <i class="far fa-calendar"></i>
-              </span>
-              <span class="post-meta-item-text">Posted on</span>
-
-              <time title="Created: 2023-11-26 09:59:22" itemprop="dateCreated datePublished" datetime="2023-11-26T09:59:22+08:00">2023-11-26</time>
-            </span>
-              <span class="post-meta-item">
-                <span class="post-meta-item-icon">
-                  <i class="far fa-calendar-check"></i>
-                </span>
-                <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2023-12-11 17:28:38" itemprop="dateModified" datetime="2023-12-11T17:28:38+08:00">2023-12-11</time>
-              </span>
-
-          
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-
-      
-          <h2 id="normal-shader-效果调试">Normal Shader 效果调试</h2>
-<p>遇到许多问题, 包括但不限于文件导入错误、图像全黑、黑点、颠倒.</p>
-<h3 id="三角形光栅化">三角形光栅化</h3>
-<p>作业三的框架修改了很多, 列举部分如下.</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2023/11/26/GAMES101-%E4%BD%9C%E4%B8%9A3%E8%B0%83%E8%AF%95%E8%AE%B0%E5%BD%95/#more" rel="contents">
-                Read more &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-      <footer class="post-footer">
-        <div class="post-eof"></div>
-      </footer>
-  </article>
-  
-  
-  
-
 
   
   <nav class="pagination">
@@ -928,14 +929,14 @@
       <div class="site-state-item site-state-posts">
           <a href="/archives/">
         
-          <span class="site-state-item-count">12</span>
+          <span class="site-state-item-count">13</span>
           <span class="site-state-item-name">posts</span>
         </a>
       </div>
       <div class="site-state-item site-state-tags">
             <a href="/tags/">
           
-        <span class="site-state-item-count">9</span>
+        <span class="site-state-item-count">10</span>
         <span class="site-state-item-name">tags</span></a>
       </div>
   </nav>
