@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 7.0.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon_1.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32_1.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16_1.png">
+  <link rel="mask-icon" href="/images/android-chrome-512x512_1.png" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/all.min.css">
+
+<script id="hexo-configurations">
+    var NexT = window.NexT || {};
+    var CONFIG = {"hostname":"example.com","root":"/","scheme":"Gemini","version":"7.8.0","exturl":false,"sidebar":{"position":"left","display":"post","padding":18,"offset":12,"onmobile":false},"copycode":{"enable":true,"show_result":true,"style":"default"},"back2top":{"enable":true,"sidebar":false,"scrollpercent":false},"bookmark":{"enable":false,"color":"#222","save":"auto"},"fancybox":false,"mediumzoom":false,"lazyload":true,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"algolia":{"hits":{"per_page":10},"labels":{"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}},"localsearch":{"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},"motion":{"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}}};
+  </script>
+
+  <meta name="description" content="笔者使用WSL2环境. 需要注意，此时VScode链接Linux远端后需要配置C编译环境（GCC&#x2F;GDB等）. 此外，btest.c中出现大量报错. 另外，make时也有如下报错. 但这些均不影响作答和评分！">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CSAPP DataLab">
+<meta property="og:url" content="http://example.com/2024/03/17/CSAPP-DataLab/index.html">
+<meta property="og:site_name" content="Fan&#39;s Page">
+<meta property="og:description" content="笔者使用WSL2环境. 需要注意，此时VScode链接Linux远端后需要配置C编译环境（GCC&#x2F;GDB等）. 此外，btest.c中出现大量报错. 另外，make时也有如下报错. 但这些均不影响作答和评分！">
+<meta property="og:locale" content="en_US">
+<meta property="article:published_time" content="2024-03-17T09:07:03.000Z">
+<meta property="article:modified_time" content="2024-03-18T14:21:32.563Z">
+<meta property="article:author" content="hefan">
+<meta property="article:tag" content="CSAPP">
+<meta name="twitter:card" content="summary">
+
+<link rel="canonical" href="http://example.com/2024/03/17/CSAPP-DataLab/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome : false,
+    isPost : true,
+    lang   : 'en'
+  };
+</script>
+
+  <title>CSAPP DataLab | Fan's Page</title>
+  
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="container use-motion">
+    <div class="headband"></div>
+
+    <header class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="Toggle navigation bar">
+      <span class="toggle-line toggle-line-first"></span>
+      <span class="toggle-line toggle-line-middle"></span>
+      <span class="toggle-line toggle-line-last"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <span class="logo-line-before"><i></i></span>
+      <h1 class="site-title">Fan's Page</h1>
+      <span class="logo-line-after"><i></i></span>
+    </a>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger">
+    </div>
+  </div>
+</div>
+
+
+
+
+<nav class="site-nav">
+  <ul id="menu" class="main-menu menu">
+        <li class="menu-item menu-item-home">
+
+    <a href="/" rel="section"><i class="fa fa-home fa-fw"></i>Home</a>
+
+  </li>
+        <li class="menu-item menu-item-archives">
+
+    <a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>Archives</a>
+
+  </li>
+        <li class="menu-item menu-item-about">
+
+    <a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>About</a>
+
+  </li>
+        <li class="menu-item menu-item-tags">
+
+    <a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>Tags</a>
+
+  </li>
+  </ul>
+</nav>
+
+
+
+
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+
+          <div class="content post posts-expand">
+            
+
+    
+  
+  
+  <article itemscope itemtype="http://schema.org/Article" class="post-block" lang="en">
+    <link itemprop="mainEntityOfPage" href="http://example.com/2024/03/17/CSAPP-DataLab/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.jpg">
+      <meta itemprop="name" content="hefan">
+      <meta itemprop="description" content="">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Fan's Page">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          CSAPP DataLab
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="far fa-calendar"></i>
+              </span>
+              <span class="post-meta-item-text">Posted on</span>
+
+              <time title="Created: 2024-03-17 17:07:03" itemprop="dateCreated datePublished" datetime="2024-03-17T17:07:03+08:00">2024-03-17</time>
+            </span>
+              <span class="post-meta-item">
+                <span class="post-meta-item-icon">
+                  <i class="far fa-calendar-check"></i>
+                </span>
+                <span class="post-meta-item-text">Edited on</span>
+                <time title="Modified: 2024-03-18 22:21:32" itemprop="dateModified" datetime="2024-03-18T22:21:32+08:00">2024-03-18</time>
+              </span>
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <p>笔者使用WSL2环境. 需要注意，此时VScode链接Linux远端后需要配置C编译环境（GCC/GDB等）. 此外，<code>btest.c</code>中出现大量报错. 另外，make时也有如下报错. 但这些均不影响作答和评分！</p>
+<span id="more"></span>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">make: Warning: File &#x27;bits.c&#x27; has modification time 149 s in the future</span><br><span class="line">gcc -O -Wall -m64 -lm -o btest bits.c btest.c decl.c tests.c</span><br><span class="line">btest.c: In function ‘test_function’:</span><br><span class="line">btest.c:334:23: warning: ‘arg_test_range’ may be used uninitialized [-Wmaybe-uninitialized]</span><br><span class="line">  334 |     if (arg_test_range[2] &lt; 1)</span><br><span class="line">      |         ~~~~~~~~~~~~~~^~~</span><br><span class="line">btest.c:299:9: note: ‘arg_test_range’ declared here</span><br><span class="line">  299 |     int arg_test_range[3]; /* test range for each argument */</span><br><span class="line">      |         ^~~~~~~~~~~~~~</span><br><span class="line">make: warning:  Clock skew detected.  Your build may be incomplete.</span><br></pre></td></tr></table></figure>
+<p>Lab的writeup和readme相当长，二者有相当的重复.</p>
+<p><strong>int bitXor(int x, int y) </strong></p>
+<p>使用<code>~</code>和<code>&amp;</code>实现异或效果，较为简单.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">bitXor</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;</span><br><span class="line">    <span class="keyword">return</span> ((~x) &amp; y) | (x &amp; (~y));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>要注意，<code>+</code>运算优先级高于<code>&amp;</code>.</p>
+<p><strong>int tmin(void)</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">tmin</span><span class="params">(<span class="type">void</span>)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> <span class="number">1</span> &lt;&lt; <span class="number">31</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>int isTmax(int x)</strong></p>
+<p>判断相等与否. 相等返回1，不然返回0. 较难，特别需要意识到！为逻辑运算符.</p>
+<p>最大值为<code>01111...1</code>，有特点如下.</p>
+<ul>
+<li>x+1 = <code>10000...0</code>;</li>
+<li>x+1+x = <code>11111...1</code>.</li>
+</ul>
+<p>其中有<code>0xfff..f</code>亦满足第二条，因此需要充分判定两个条件. 借助第二个条件全一的特点，我们可以使用<code>~</code>与<code>!</code>实现判定.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isTmax</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="keyword">return</span> !(~(x + <span class="number">1</span> + x) | !(x + <span class="number">1</span>));</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>int allOddBits(int x)</strong></p>
+<p>判断是否所有的奇数位均被设为1. 这里使用&amp;作为mask的特性.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">allOddBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="comment">//return !~(((x &gt;&gt; 1) - (1 &lt;&lt; 31)) ^ x);</span></span><br><span class="line">  <span class="type">int</span> odd = <span class="number">0xAAAAAAAA</span>;</span><br><span class="line">  <span class="keyword">return</span> !((x &amp; odd) ^ odd);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>其中注释部分试图验证是否等于<code>0xAAAAAAAA</code>.</p>
+<p><strong>int negate(int x)</strong></p>
+<p>取反加一.</p>
+<p><strong>isAsciiDigit(intx)</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isAsciiDigit</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> mask = <span class="number">1</span> &lt;&lt; <span class="number">31</span>;</span><br><span class="line">  <span class="keyword">return</span> !(((~x + <span class="number">1</span> + <span class="number">0x39</span>) | (x + ~<span class="number">0x30</span> + <span class="number">1</span>)) &amp; mask);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>利用符号位判断即可，注意0符号位为0.</p>
+<p><strong>int conditional(int x, int y, int z)</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">conditional</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">int</span> z)</span> &#123;</span><br><span class="line">  <span class="type">int</span> tmp = ((!!x) &lt;&lt; <span class="number">31</span>) &gt;&gt; <span class="number">31</span>;</span><br><span class="line">  <span class="keyword">return</span> (tmp &amp; y) | (~tmp &amp; z);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>煞费苦心，主要是将！得到的1变为全一. 不过多赘述. 看到有另外解法，一并列举如下.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">conditional</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y, <span class="type">int</span> z)</span> &#123;</span><br><span class="line">  <span class="type">int</span> f = ~(!x) + <span class="number">1</span>;</span><br><span class="line">  <span class="type">int</span> of = ~f;</span><br><span class="line">  <span class="keyword">return</span> ((f ^ y) &amp; of) | ((of ^ z) &amp; f);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>~(!x) + 1</code> 构造了 x 的类布尔表示，如果 x 为真，表达式结果为 0，反之表达式结果为 ~0.</p>
+<p><strong>int isLessOrEqual(int x, int y)</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">isLessOrEqual</span><span class="params">(<span class="type">int</span> x, <span class="type">int</span> y)</span> &#123;</span><br><span class="line">  <span class="type">int</span> mask = <span class="number">1</span> &lt;&lt; <span class="number">31</span>;</span><br><span class="line">  <span class="keyword">return</span> !((~x + <span class="number">1</span> + y) &amp; mask);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>与前面较类似. 注意不能写成<code>y + ~x + 1</code>. 在以下示例中，<code>y + ~x</code>就已经溢出.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hefan@DESKTOP-BKFE3KS:/mnt/e/CSAPP/CSAPP-Labs/datalab-handout$ ./btest -f isLessOrEqual</span><br><span class="line">Score   Rating  Errors  Function</span><br><span class="line">ERROR: Test isLessOrEqual(-2147483648[0x80000000],2147483647[0x7fffffff]) failed...</span><br><span class="line">...Gives 0[0x0]. Should be 1[0x1]</span><br><span class="line">Total points: 0/3</span><br></pre></td></tr></table></figure>
+<p><strong>int logicalNeg(int x)</strong></p>
+<p>利用0的负数符号位均为0.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">logicalNeg</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> mask = <span class="number">1</span>;</span><br><span class="line">  <span class="keyword">return</span> (~((~x + <span class="number">1</span>) | x) &gt;&gt; <span class="number">31</span>) &amp; mask;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>观察32位补码.</p>
+<table>
+<thead>
+<tr class="header">
+<th style="text-align: center;">数字</th>
+<th style="text-align: center;">32位补码</th>
+<th style="text-align: center;">最简表达</th>
+<th style="text-align: center;">位数</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td style="text-align: center;">12</td>
+<td style="text-align: center;">0x0000000c</td>
+<td style="text-align: center;">01100</td>
+<td style="text-align: center;">5位</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">5</td>
+<td style="text-align: center;">0x00000005</td>
+<td style="text-align: center;">0101</td>
+<td style="text-align: center;">4位</td>
+</tr>
+<tr class="odd">
+<td style="text-align: center;">-12</td>
+<td style="text-align: center;">0xfffffff4</td>
+<td style="text-align: center;">10100</td>
+<td style="text-align: center;">5位</td>
+</tr>
+<tr class="even">
+<td style="text-align: center;">-5</td>
+<td style="text-align: center;">0xfffffffb</td>
+<td style="text-align: center;">1011</td>
+<td style="text-align: center;">4位</td>
+</tr>
+</tbody>
+</table>
+<p>除去符号位，正数时需寻到最高非零位，负数时则需要寻到最高零位.</p>
+<p>为了统一，需要先将负数取反，将问题统一成计算最高1位. 我们利用算数右移实现.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">x = (x &gt;&gt; <span class="number">31</span>) ^ x;</span><br></pre></td></tr></table></figure>
+<p>而后我们考察如何找到最高1位.</p>
+<p>以下解法来自 <a target="_blank" rel="noopener" href="https://mcginn7.github.io/2020/02/14/CSAPP-datalab/#howManyBits-x">博客</a>.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">howManyBits</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  <span class="type">int</span> bit;</span><br><span class="line">  <span class="type">int</span> res = <span class="number">1</span>;</span><br><span class="line">  x = x ^ (x &gt;&gt; <span class="number">31</span>);</span><br><span class="line"></span><br><span class="line">  bit = !!(x &gt;&gt; <span class="number">16</span>) &lt;&lt; <span class="number">4</span>;</span><br><span class="line">  res = res + bit;</span><br><span class="line">  x = x &gt;&gt; bit;</span><br><span class="line"></span><br><span class="line">  bit = !!(x &gt;&gt; <span class="number">8</span>) &lt;&lt; <span class="number">3</span>;</span><br><span class="line">  res = res + bit;</span><br><span class="line">  x = x &gt;&gt; bit;</span><br><span class="line"></span><br><span class="line">  bit = !!(x &gt;&gt; <span class="number">4</span>) &lt;&lt; <span class="number">2</span>;</span><br><span class="line">  res = res + bit;</span><br><span class="line">  x = x &gt;&gt; bit;</span><br><span class="line"></span><br><span class="line">  bit = !!(x &gt;&gt; <span class="number">2</span>) &lt;&lt; <span class="number">1</span>;</span><br><span class="line">  res = res + bit;</span><br><span class="line">  x = x &gt;&gt; bit;</span><br><span class="line"></span><br><span class="line">  bit = !!(x &gt;&gt; <span class="number">1</span>);</span><br><span class="line">  res = res + bit;</span><br><span class="line">  x = x &gt;&gt; bit;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">return</span> x + res;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>unsigned floatScale2(unsigned uf)</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="title function_">floatScale2</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> ((uf &lt;&lt; <span class="number">1</span>) &gt;= <span class="number">0xff000000</span>) &#123;</span><br><span class="line">    <span class="comment">//NaN或Infity</span></span><br><span class="line">    <span class="keyword">return</span> uf;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">unsigned</span> base = uf &amp; <span class="number">0b00000000011111111111111111111111</span>;</span><br><span class="line">  <span class="type">unsigned</span> sign = uf &amp; <span class="number">0x80000000</span>;</span><br><span class="line">  <span class="type">unsigned</span> power = uf &amp; <span class="number">0b01111111100000000000000000000000</span>;</span><br><span class="line">  <span class="keyword">if</span> ((uf &lt;&lt; <span class="number">1</span>) &gt; <span class="number">0x00ffffff</span>) &#123;</span><br><span class="line">    <span class="comment">//考虑normalized.</span></span><br><span class="line">    power = (power + <span class="number">0b00000000100000000000000000000000</span>) &amp; <span class="number">0b01111111100000000000000000000000</span>;</span><br><span class="line">    <span class="keyword">return</span> base + power + sign;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">//denomalized.</span></span><br><span class="line">    <span class="keyword">return</span> (uf &lt;&lt; <span class="number">1</span>) | sign;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>写得比较难看，是很直观的方法. 主要是通过&amp;取出次数、底数操作. 其中denomalized下的浮点数乘以二变成nomalized的情况需要举例子细细思量.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ERROR: Test floatScale2(1065353216[0x3f800000]) failed...</span><br><span class="line">...Gives 2130706432[0x7f000000]. Should be 1073741824[0x40000000]</span><br><span class="line">Total points: 0/4</span><br></pre></td></tr></table></figure>
+<p>这样的浮点编码设计实在巧妙.</p>
+<p><strong>int floatFloat2Int(unsigned uf)</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">int</span> <span class="title function_">floatFloat2Int</span><span class="params">(<span class="type">unsigned</span> uf)</span> &#123;</span><br><span class="line">  <span class="keyword">if</span> ((uf &lt;&lt; <span class="number">1</span>) &gt;= <span class="number">0xff000000</span>) &#123;</span><br><span class="line">    <span class="comment">//NaN或Infity</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0x80000000</span>u;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="type">unsigned</span> base = uf &amp; <span class="number">0b00000000011111111111111111111111</span>;</span><br><span class="line">  <span class="type">unsigned</span> sign = uf &amp; <span class="number">0x80000000</span>;</span><br><span class="line">  <span class="type">int</span> power = uf &amp; <span class="number">0b01111111100000000000000000000000</span>;</span><br><span class="line">  <span class="keyword">if</span> ((uf &lt;&lt; <span class="number">1</span>) &gt; <span class="number">0x00ffffff</span>) &#123;</span><br><span class="line">    <span class="comment">//考虑normalized.</span></span><br><span class="line">    power = (power &gt;&gt; <span class="number">23</span>) &amp; <span class="number">0xff</span>;</span><br><span class="line">    power = power - <span class="number">127</span>;</span><br><span class="line"></span><br><span class="line">    <span class="keyword">if</span> (power &gt; <span class="number">31</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0x80000000</span>u;</span><br><span class="line">    <span class="keyword">else</span> <span class="keyword">if</span> (power &lt; <span class="number">0</span>)</span><br><span class="line">      <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">    <span class="keyword">else</span> &#123;</span><br><span class="line">      base = base + (<span class="number">1</span> &lt;&lt; <span class="number">23</span>);</span><br><span class="line">      <span class="type">int</span> res;</span><br><span class="line">      <span class="keyword">if</span> (power &lt; <span class="number">23</span>) &#123;</span><br><span class="line">        res = (base &gt;&gt; (<span class="number">23</span> - power));</span><br><span class="line">      &#125;</span><br><span class="line">      <span class="keyword">else</span> &#123;</span><br><span class="line">        res = (base &lt;&lt; (power - <span class="number">23</span>));</span><br><span class="line">      &#125;</span><br><span class="line"></span><br><span class="line">      <span class="keyword">if</span> (sign)</span><br><span class="line">        res = ~res + <span class="number">1</span>;</span><br><span class="line">      <span class="keyword">return</span> res;</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;</span><br><span class="line">  <span class="keyword">else</span> &#123;</span><br><span class="line">    <span class="comment">//denomalized.</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里思路较常规，需要注意的是次方不能用unsigned存储. 这是因为幂次可能为负.</p>
+<p><strong>unsigned floatPower2(int x)</strong></p>
+<p>用浮点数表示<span class="math inline">\(2^x\)</span>，只需要表示成<span class="math inline">\(+1\times1\times2^x\)</span>即可. 此处答案参考自<a target="_blank" rel="noopener" href="https://mcginn7.github.io/2020/02/14/CSAPP-datalab/#floatPower2-x">博客</a>.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="type">unsigned</span> <span class="title function_">floatPower2</span><span class="params">(<span class="type">int</span> x)</span> &#123;</span><br><span class="line">  x = x + <span class="number">0x7f</span>;</span><br><span class="line">  <span class="keyword">if</span> (x &lt; <span class="number">0</span>) <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">  <span class="keyword">return</span> x &lt; <span class="number">0xff</span> ? x &lt;&lt; <span class="number">23</span> : <span class="number">0x7f800000</span>u;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+    </div>
+
+    
+    
+    
+
+      <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/CSAPP/" rel="tag"># CSAPP</a>
+          </div>
+
+        
+
+
+        
+    <div class="post-nav">
+      <div class="post-nav-item">
+    <a href="/2024/03/14/C-priority-queue-%E8%87%AA%E5%AE%9A%E4%B9%89%E5%AE%9E%E7%8E%B0/" rel="prev" title="C++ priority_queue 自定义实现">
+      <i class="fa fa-chevron-left"></i> C++ priority_queue 自定义实现
+    </a></div>
+      <div class="post-nav-item"></div>
+    </div>
+      </footer>
+    
+  </article>
+  
+  
+  
+
+
+
+          </div>
+          
+
+<script>
+  window.addEventListener('tabs:register', () => {
+    let { activeClass } = CONFIG.comments;
+    if (CONFIG.comments.storage) {
+      activeClass = localStorage.getItem('comments_active') || activeClass;
+    }
+    if (activeClass) {
+      let activeTab = document.querySelector(`a[href="#comment-${activeClass}"]`);
+      if (activeTab) {
+        activeTab.click();
+      }
+    }
+  });
+  if (CONFIG.comments.storage) {
+    window.addEventListener('tabs:click', event => {
+      if (!event.target.matches('.tabs-comment .tab-content .tab-pane')) return;
+      let commentClass = event.target.classList[1];
+      localStorage.setItem('comments_active', commentClass);
+    });
+  }
+</script>
+
+        </div>
+          
+  
+  <div class="toggle sidebar-toggle">
+    <span class="toggle-line toggle-line-first"></span>
+    <span class="toggle-line toggle-line-middle"></span>
+    <span class="toggle-line toggle-line-last"></span>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          Table of Contents
+        </li>
+        <li class="sidebar-nav-overview">
+          Overview
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image" alt="hefan"
+      src="/images/avatar.jpg">
+  <p class="site-author-name" itemprop="name">hefan</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+<div class="site-state-wrap motion-element">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">14</span>
+          <span class="site-state-item-name">posts</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-tags">
+            <a href="/tags/">
+          
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">tags</span></a>
+      </div>
+  </nav>
+</div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer class="footer">
+      <div class="footer-inner">
+        
+
+        
+
+<div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2024</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">hefan</span>
+</div>
+  <div class="powered-by">Powered by <a href="https://hexo.io/" class="theme-link" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.org/" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a>
+  </div>
+
+        
+
+
+
+
+
+
+
+
+      </div>
+    </footer>
+  </div>
+
+  
+  <script src="/lib/anime.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/lozad@1/dist/lozad.min.js"></script>
+  <script src="//cdn.jsdelivr.net/npm/pangu@4/dist/browser/pangu.min.js"></script>
+  <script src="/lib/velocity/velocity.min.js"></script>
+  <script src="/lib/velocity/velocity.ui.min.js"></script>
+
+<script src="/js/utils.js"></script>
+
+<script src="/js/motion.js"></script>
+
+
+<script src="/js/schemes/pisces.js"></script>
+
+
+<script src="/js/next-boot.js"></script>
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+<script>
+document.querySelectorAll('.pdfobject-container').forEach(element => {
+  let url = element.dataset.target;
+  let pdfOpenParams = {
+    navpanes : 0,
+    toolbar  : 0,
+    statusbar: 0,
+    pagemode : 'thumbs',
+    view     : 'FitH'
+  };
+  let pdfOpenFragment = '#' + Object.entries(pdfOpenParams).map(([key, value]) => `${key}=${encodeURIComponent(value)}`).join('&');
+  let fullURL = `/lib/pdf/web/viewer.html?file=${encodeURIComponent(url)}${pdfOpenFragment}`;
+
+  if (NexT.utils.supportsPDFs()) {
+    element.innerHTML = `<embed class="pdfobject" src="${url + pdfOpenFragment}" type="application/pdf" style="height: ${element.dataset.height};">`;
+  } else {
+    element.innerHTML = `<iframe src="${fullURL}" style="height: ${element.dataset.height};" frameborder="0"></iframe>`;
+  }
+});
+</script>
+
+
+
+
+  
+
+  
+      
+
+<script>
+  if (typeof MathJax === 'undefined') {
+    window.MathJax = {
+      loader: {
+        source: {
+          '[tex]/amsCd': '[tex]/amscd',
+          '[tex]/AMScd': '[tex]/amscd'
+        }
+      },
+      tex: {
+        inlineMath: {'[+]': [['$', '$']]},
+        tags: 'ams'
+      },
+      options: {
+        renderActions: {
+          findScript: [10, doc => {
+            document.querySelectorAll('script[type^="math/tex"]').forEach(node => {
+              const display = !!node.type.match(/; *mode=display/);
+              const math = new doc.options.MathItem(node.textContent, doc.inputJax[0], display);
+              const text = document.createTextNode('');
+              node.parentNode.replaceChild(text, node);
+              math.start = {node: text, delim: '', n: 0};
+              math.end = {node: text, delim: '', n: 0};
+              doc.math.push(math);
+            });
+          }, '', false],
+          insertedScript: [200, () => {
+            document.querySelectorAll('mjx-container').forEach(node => {
+              let target = node.parentNode;
+              if (target.nodeName.toLowerCase() === 'li') {
+                target.parentNode.classList.add('has-jax');
+              }
+            });
+          }, '', false]
+        }
+      }
+    };
+    (function () {
+      var script = document.createElement('script');
+      script.src = '//cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js';
+      script.defer = true;
+      document.head.appendChild(script);
+    })();
+  } else {
+    MathJax.startup.document.state(0);
+    MathJax.texReset();
+    MathJax.typeset();
+  }
+</script>
+
+    
+
+  
+
+</body>
+</html>
