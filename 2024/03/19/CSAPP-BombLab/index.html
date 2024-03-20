@@ -28,7 +28,7 @@
 <meta property="og:description" content="用GDB调试汇编可太折磨了，以前的程序员是怎么活下来的... 先反汇编得到汇编代码，将其存储在bomb.asm文件中方便查阅. 1objdump -s -d bomb &gt; bomb.asm Lab提供了程序主函数，我们可以根据其中的流程知道汇编中代码调用的流程，方便分析.">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2024-03-19T14:33:19.000Z">
-<meta property="article:modified_time" content="2024-03-20T04:24:52.188Z">
+<meta property="article:modified_time" content="2024-03-20T16:46:09.351Z">
 <meta property="article:author" content="hefan">
 <meta property="article:tag" content="CSAPP">
 <meta name="twitter:card" content="summary">
@@ -191,7 +191,7 @@
                   <i class="far fa-calendar-check"></i>
                 </span>
                 <span class="post-meta-item-text">Edited on</span>
-                <time title="Modified: 2024-03-20 12:24:52" itemprop="dateModified" datetime="2024-03-20T12:24:52+08:00">2024-03-20</time>
+                <time title="Modified: 2024-03-21 00:46:09" itemprop="dateModified" datetime="2024-03-21T00:46:09+08:00">2024-03-21</time>
               </span>
 
           
@@ -205,7 +205,7 @@
     <div class="post-body" itemprop="articleBody">
 
       
-        <link rel="stylesheet" type="text/css" href="https://jsd.onmicrosoft.cn/npm/hexo-theme-a4@latest/source/css/lightgallery.min.css" /><div class=".article-gallery"><p>用GDB调试汇编可太折磨了，以前的程序员是怎么活下来的...</p>
+        <p>用GDB调试汇编可太折磨了，以前的程序员是怎么活下来的...</p>
 <p>先反汇编得到汇编代码，将其存储在bomb.asm文件中方便查阅.</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">objdump -s -d bomb &gt; bomb.asm</span><br></pre></td></tr></table></figure>
 <p>Lab提供了程序主函数，我们可以根据其中的流程知道汇编中代码调用的流程，方便分析.</p>
@@ -264,7 +264,7 @@
 <p>而后比较函数返回值与$0x5，若%eax&gt;$0x5，则释放栈空间. 否则，调用explode_bomb. 结合函数名称，这里需要读取6个数字. 查阅sscanf函数可知返回值为读取参数个数.</p>
 <blockquote>
 <p><code>sscanf</code> 是 C 语言标准库中的一个函数，用于从一个字符串中按照指定的格式解析数据，并将解析后的数据存储到指定的变量中。其函数原型定义在头文件 <code>&lt;stdio.h&gt;</code> 中，通常为：</p>
-<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">cCopy code</span><br><span class="line">int sscanf(const char *str, const char *format, ...);</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">int sscanf(const char *str, const char *format, ...);</span><br></pre></td></tr></table></figure>
 <p>其中：</p>
 <ul>
 <li><code>str</code> 是待解析的字符串；</li>
@@ -285,13 +285,76 @@
 </blockquote>
 <p>创建文件psw.txt存储密钥.</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hefan@DESKTOP-BKFE3KS:/mnt/e/CSAPP/CSAPP-Labs/bomb$ vi psw.txt</span><br></pre></td></tr></table></figure>
-<p>而后将已有密钥CV其中.</p>
-</div><script src="https://jsd.onmicrosoft.cn/npm/hexo-theme-a4@latest/source/js/lightgallery.min.js"></script><script>if (typeof lightGallery !== 'undefined') {
-        var options = {
-            selector: '.gallery-item'
-        };
-        lightGallery(document.getElementsByClassName('.article-gallery')[0], options);
-        }</script>
+<p>而后将已有密钥CV其中. 第二个密钥我们设置为<code>666666</code>. 在read_six_numbers返回处设置断点.</p>
+<p>但是直接爆炸了.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(gdb) run psw.txt</span><br><span class="line">Starting program: /mnt/e/CSAPP/CSAPP-Labs/bomb/bomb psw.txt</span><br><span class="line">[Thread debugging using libthread_db enabled]   </span><br><span class="line">Using host libthread_db library &quot;/lib/x86_64-linux-gnu/libthread_db.so.1&quot;.</span><br><span class="line">Welcome to my fiendish little bomb. You have 6 phases with</span><br><span class="line">which to blow yourself up. Have a nice day!     </span><br><span class="line">Phase 1 defused. How about the next one?        </span><br><span class="line"></span><br><span class="line">BOOM!!!</span><br><span class="line">The bomb has blown up.</span><br><span class="line">[Inferior 1 (process 78) exited with code 010]  </span><br></pre></td></tr></table></figure>
+<p>我们在比较数字个数处设置断点. 查看此时全部寄存器数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">Breakpoint 2, 0x000000000040148f in read_six_numbers ()</span><br><span class="line">(gdb) info register</span><br><span class="line">rax            0x1                 1</span><br><span class="line">...</span><br></pre></td></tr></table></figure>
+<p>原来是没有空格分开.</p>
+<blockquote>
+<p>注意：最后一个数字末尾需要有空格或者换行，否则识别时只有5个数字.</p>
+</blockquote>
+<p>调整输入之后，重新调试. 如果二者不相等，调用explode_bomb.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">400f0a:	83 3c 24 01          	cmpl   $0x1,(%rsp)</span><br><span class="line">400f0e:	74 20                	je     400f30 &lt;phase_2+0x34&gt;</span><br><span class="line">400f10:	e8 25 05 00 00       	call   40143a &lt;explode_bomb&gt;</span><br></pre></td></tr></table></figure>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">Breakpoint 1, 0x0000000000400f0a in phase_2 ()</span><br><span class="line">(gdb) info register rsp</span><br><span class="line">rsp            0x7fffffffe0f0      0x7fffffffe0f0</span><br><span class="line">(gdb) x/2wx 0x7fffffffe0f0</span><br><span class="line">0x7fffffffe0f0: 0x00000006      0x00000006</span><br></pre></td></tr></table></figure>
+<p>查看此时寄存器数据，我们输入的6此时应该存在哪里？%rsp中的6应该是一个. 将文件中密钥改为<code>1 1 1 1 1 1</code>. 重新尝试，可以看到此时数据为1.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info register rsp</span><br><span class="line">rsp            0x7fffffffe0f0      0x7fffffffe0f0</span><br><span class="line">(gdb) x/2w 0x7fffffffe0f0</span><br><span class="line">0x7fffffffe0f0: 0x00000001      0x00000001</span><br></pre></td></tr></table></figure>
+<p>这样就通过检验. 我们直接跳转.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) si</span><br><span class="line">0x0000000000400f0e in phase_2 ()</span><br><span class="line">(gdb) si</span><br><span class="line">0x0000000000400f30 in phase_2 ()</span><br></pre></td></tr></table></figure>
+<p>在赋值两次之后，跳转到400f17. 可以看到又是一次判定.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">400f17:	8b 43 fc             	mov    -0x4(%rbx),%eax</span><br><span class="line">400f1a:	01 c0                	add    %eax,%eax</span><br><span class="line">400f1c:	39 03                	cmp    %eax,(%rbx)</span><br><span class="line">400f1e:	74 05                	je     400f25 &lt;phase_2+0x29&gt;</span><br><span class="line">400f20:	e8 15 05 00 00       	call   40143a &lt;explode_bomb&gt;</span><br></pre></td></tr></table></figure>
+<p>查看此时数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">0x0000000000400f1a in phase_2 ()</span><br><span class="line">(gdb) info register eax</span><br><span class="line">eax            0x1                 1</span><br><span class="line">(gdb) info register rbx</span><br><span class="line">rbx            0x7fffffffe0f4      140737488347380</span><br><span class="line">(gdb) x/2w 0x7fffffffe0f4</span><br><span class="line">0x7fffffffe0f4: 0x00000001      0x00000001</span><br></pre></td></tr></table></figure>
+<p>这里应该是要求输入数据的两位之间有一个二倍关系， 我们需要先搞清楚区分不同数据的存储位置. 将密钥改为<code>1 2 3 4 5 6</code>，重新调试.</p>
+<p>跳转到0x400f30后我们查看一下操作中的数据.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">400f30:	48 8d 5c 24 04       	lea    0x4(%rsp),%rbx</span><br><span class="line">400f35:	48 8d 6c 24 18       	lea    0x18(%rsp),%rbp</span><br><span class="line">400f3a:	eb db                	jmp    400f17 &lt;phase_2+0x1b&gt;</span><br></pre></td></tr></table></figure>
+<p>查看跳转到400f17后的情况.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">400f17:	8b 43 fc             	mov    -0x4(%rbx),%eax</span><br><span class="line">400f1a:	01 c0                	add    %eax,%eax</span><br><span class="line">400f1c:	39 03                	cmp    %eax,(%rbx)</span><br><span class="line">400f1e:	74 05                	je     400f25 &lt;phase_2+0x29&gt;</span><br><span class="line">400f20:	e8 15 05 00 00       	call   40143a &lt;explode_bomb&gt;</span><br></pre></td></tr></table></figure>
+<p>观察到地址减去了4，查看这里的数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) info register eax</span><br><span class="line">eax            0x1                 1</span><br><span class="line">(gdb) x/w $rbx</span><br><span class="line">0x7fffffffe0f4: 2</span><br></pre></td></tr></table></figure>
+<p>那么就是说<span class="math inline">\(1\times2\)</span>应当与<code>(%rbx)</code>相等. 此时其为2，也就是我们密钥的第二项. 可以看到成功通过判定.</p>
+<p>而后可以看出为循环操作.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">400f17:	8b 43 fc             	mov    -0x4(%rbx),%eax</span><br><span class="line">400f1a:	01 c0                	add    %eax,%eax</span><br><span class="line">400f1c:	39 03                	cmp    %eax,(%rbx)</span><br><span class="line">400f1e:	74 05                	je     400f25 &lt;phase_2+0x29&gt;</span><br><span class="line">400f20:	e8 15 05 00 00       	call   40143a &lt;explode_bomb&gt;</span><br><span class="line">400f25:	48 83 c3 04          	add    $0x4,%rbx	&lt;------    we&#x27;re here.</span><br><span class="line">400f29:	48 39 eb             	cmp    %rbp,%rbx</span><br><span class="line">400f2c:	75 e9                	jne    400f17 &lt;phase_2+0x1b&gt;</span><br></pre></td></tr></table></figure>
+<p>终止地址为%rbp，查看这中间的数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/5w $rbx</span><br><span class="line">0x7fffffffe0f4: 2       3       4       5</span><br><span class="line">0x7fffffffe104: 6</span><br></pre></td></tr></table></figure>
+<p>基本已经破解完毕，依次乘二即为密钥.</p>
+<blockquote>
+<p>1 2 4 8 16 32</p>
+</blockquote>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">hefan@DESKTOP-BKFE3KS:/mnt/e/CSAPP/CSAPP-Labs/bomb$ ./bomb psw</span><br><span class="line">Welcome to my fiendish little bomb. You have 6 phases with</span><br><span class="line">which to blow yourself up. Have a nice day!</span><br><span class="line">Phase 1 defused. How about the next one?</span><br><span class="line">That&#x27;s number 2.  Keep going!</span><br></pre></td></tr></table></figure>
+<h2 id="phase-3">Phase #3</h2>
+<p>函数常规操作略去不谈. phase_3中若输入参数数目不大于1，则爆炸.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">400f56:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">400f5b:	e8 90 fc ff ff       	call   400bf0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">400f60:	83 f8 01             	cmp    $0x1,%eax</span><br><span class="line">400f63:	7f 05                	jg     400f6a &lt;phase_3+0x27&gt;</span><br><span class="line">400f65:	e8 d0 04 00 00       	call   40143a &lt;explode_bomb&gt;</span><br><span class="line">400f6a:	83 7c 24 08 07       	cmpl   $0x7,0x8(%rsp)</span><br><span class="line">400f6f:	77 3c                	ja     400fad &lt;phase_3+0x6a&gt;</span><br></pre></td></tr></table></figure>
+<p>代码看着太头大了，我们尝试<code>1 2 3</code>直接跑一下试试.</p>
+<p>在比较sscanf得到参数个数时插入断点，查看函数参数.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">0x0000000000400f5b in phase_3 ()</span><br><span class="line">(gdb) x/s $esi</span><br><span class="line">0x4025cf:       &quot;%d %d&quot;</span><br></pre></td></tr></table></figure>
+<p>可知sscanf只获取两个整数. 若数目小于2，会直接爆炸. 将psw改为<code>1 2</code>，重新调试. 我们直接运行至<code>400f6a</code>. 查看数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/w $rsp+0x8</span><br><span class="line">0x7fffffffe118: 1</span><br><span class="line">(gdb) x/w $rsp+0xc</span><br><span class="line">0x7fffffffe11c: 2</span><br></pre></td></tr></table></figure>
+<p>我们已经知道输入数据的存储位置了. 这里将首个数字同常量$0x7作比较. 若大于7，则跳转至400fad. 这里我们不会跳转，继续执行.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">400f71:	8b 44 24 08          	mov    0x8(%rsp),%eax</span><br><span class="line">400f75:	ff 24 c5 70 24 40 00 	jmp    *0x402470(,%rax,8)</span><br></pre></td></tr></table></figure>
+<p>这里将首个数字存储至%eax，而后跳转. 这里是跳转至0x402470+%rax*8内存中所存储的值，我们直接查看其中数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/xw 0x402468</span><br><span class="line">0x402468:       0x00000000</span><br><span class="line">(gdb) x/xw 0x402470</span><br><span class="line">0x402470:       0x00400f7c</span><br><span class="line">(gdb) x/xw 0x402478</span><br><span class="line">0x402478:       0x00400fb9</span><br><span class="line">(gdb) x/xw 0x402480</span><br><span class="line">0x402480:       0x00400f83</span><br><span class="line">(gdb) x/xw 0x402488</span><br><span class="line">0x402488:       0x00400f8a</span><br></pre></td></tr></table></figure>
+<p>可以看到存储数据与指令存储地址对应，这样我们就能够通过控制第一个数来确定接下来跳转到哪里. 可以看到，我们可以选择任何一个分支.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">400f75:	ff 24 c5 70 24 40 00 	jmp    *0x402470(,%rax,8)</span><br><span class="line">400f7c:	b8 cf 00 00 00       	mov    $0xcf,%eax				&lt;--- 0</span><br><span class="line">400f81:	eb 3b                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400f83:	b8 c3 02 00 00       	mov    $0x2c3,%eax				&lt;--- 2</span><br><span class="line">400f88:	eb 34                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400f8a:	b8 00 01 00 00       	mov    $0x100,%eax				&lt;--- 3</span><br><span class="line">400f8f:	eb 2d                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400f91:	b8 85 01 00 00       	mov    $0x185,%eax</span><br><span class="line">400f96:	eb 26                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400f98:	b8 ce 00 00 00       	mov    $0xce,%eax</span><br><span class="line">400f9d:	eb 1f                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400f9f:	b8 aa 02 00 00       	mov    $0x2aa,%eax</span><br><span class="line">400fa4:	eb 18                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400fa6:	b8 47 01 00 00       	mov    $0x147,%eax</span><br><span class="line">400fab:	eb 11                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400fad:	e8 88 04 00 00       	call   40143a &lt;explode_bomb&gt;</span><br><span class="line">400fb2:	b8 00 00 00 00       	mov    $0x0,%eax</span><br><span class="line">400fb7:	eb 05                	jmp    400fbe &lt;phase_3+0x7b&gt;</span><br><span class="line">400fb9:	b8 37 01 00 00       	mov    $0x137,%eax			  &lt;--- 1</span><br><span class="line">400fbe:	3b 44 24 0c          	cmp    0xc(%rsp),%eax</span><br><span class="line">400fc2:	74 05                	je     400fc9 &lt;phase_3+0x86&gt;</span><br><span class="line">400fc4:	e8 71 04 00 00       	call   40143a &lt;explode_bomb&gt;</span><br><span class="line">400fc9:	48 83 c4 18          	add    $0x18,%rsp</span><br><span class="line">400fcd:	c3                   	ret    </span><br></pre></td></tr></table></figure>
+<p>他们的操作是相似的. 首先将某数值赋给%eax，而后将第二个数字与%eax做比较，若相等则通过检验.</p>
+<p>我们已经里成功不远了！我们将首个数字写在对应的赋值语句旁，我们已经获得了多个密钥. 尝试<code>0 0xcf</code>.</p>
+<p>失败，查看这时读取的两个数字.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/w $rsp+0x8</span><br><span class="line">0x7fffffffe118: 0</span><br><span class="line">(gdb) x/w $rsp+0xc</span><br><span class="line">0x7fffffffe11c: 0</span><br></pre></td></tr></table></figure>
+<p>看来不能直接读取十六进制数字，转换成<code>0 207</code>.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Halfway there!</span><br></pre></td></tr></table></figure>
+<p>完成了.</p>
+<h2 id="phase-4">Phase #4</h2>
+<p>相似的，我们查看sscanf的参数.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/s $esi</span><br><span class="line">0x4025cf:       &quot;%d %d&quot;</span><br></pre></td></tr></table></figure>
+<p>可以看到，再一次要求输入两个整数. 如果个数小于2则爆炸.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">401024:	e8 c7 fb ff ff       	call   400bf0 &lt;__isoc99_sscanf@plt&gt;</span><br><span class="line">401029:	83 f8 02             	cmp    $0x2,%eax</span><br><span class="line">40102c:	75 07                	jne    401035 &lt;phase_4+0x29&gt;</span><br><span class="line">40102e:	83 7c 24 08 0e       	cmpl   $0xe,0x8(%rsp)</span><br><span class="line">401033:	76 05                	jbe    40103a &lt;phase_4+0x2e&gt;</span><br><span class="line">401035:	e8 00 04 00 00       	call   40143a &lt;explode_bomb&gt;</span><br></pre></td></tr></table></figure>
+<p>与phase#3类似，我们期待输入数据存储在栈中.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(gdb) x/xw $rsp+8</span><br><span class="line">0x7fffffffe118: 0x00000001</span><br><span class="line">(gdb) x/xw $rsp+0xc</span><br><span class="line">0x7fffffffe11c: 0x00000002</span><br></pre></td></tr></table></figure>
+<p>符合预期. 接下来很直观，如果首个数字同0xe不相同则爆炸. 我们于是知道首位数字为14. 通过首位检验后，调用函数func4. 我们先记录此时各个寄存器的数据.</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">rdx            0xe                 14</span><br><span class="line">rsi            0x0                 0</span><br><span class="line">rdi            0xe                 14</span><br></pre></td></tr></table></figure>
+<p>接下来考察func4，有必要弄清楚下面这一堆运算. 记首个数字为x，第二个为y.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">400fce:	48 83 ec 08          	sub    $0x8,%rsp</span><br><span class="line">400fd2:	89 d0                	mov    %edx,%eax</span><br><span class="line">400fd4:	29 f0                	sub    %esi,%eax //x1 = x-0</span><br><span class="line">400fd6:	89 c1                	mov    %eax,%ecx </span><br><span class="line">400fd8:	c1 e9 1f             	shr    $0x1f,%ecx //x2 = 逻辑右移31位</span><br><span class="line">400fdb:	01 c8                	add    %ecx,%eax //x3 = x1+x2</span><br><span class="line">400fdd:	d1 f8                	sar    %eax //x3 = x3 / 2</span><br><span class="line">400fdf:	8d 0c 30             	lea    (%rax,%rsi,1),%ecx</span><br></pre></td></tr></table></figure>
+
     </div>
 
     
@@ -371,7 +434,7 @@
 
       <!--noindex-->
       <div class="post-toc-wrap sidebar-panel">
-          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#phase-1"><span class="nav-number">1.</span> <span class="nav-text">Phase #1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phase-2"><span class="nav-number">2.</span> <span class="nav-text">Phase #2</span></a></li></ol></div>
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#phase-1"><span class="nav-number">1.</span> <span class="nav-text">Phase #1</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phase-2"><span class="nav-number">2.</span> <span class="nav-text">Phase #2</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phase-3"><span class="nav-number">3.</span> <span class="nav-text">Phase #3</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#phase-4"><span class="nav-number">4.</span> <span class="nav-text">Phase #4</span></a></li></ol></div>
       </div>
       <!--/noindex-->
 
