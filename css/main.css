@@ -1141,11 +1141,6 @@ pre .javascript .function {
   position: fixed;
   top: 0;
 }
-@media (max-width: 991px) {
-  .sidebar {
-    display: none;
-  }
-}
 .sidebar-inner {
   color: #999;
   padding: 18px 10px;
@@ -1198,7 +1193,7 @@ pre .javascript .function {
 }
 .links-of-author a::before,
 .links-of-author span.exturl::before {
-  background: #f22fc9;
+  background: #d7ff18;
   border-radius: 50%;
   content: ' ';
   display: inline-block;
@@ -1317,7 +1312,6 @@ pre .javascript .function {
   .sidebar-toggle {
     left: 20px;
     opacity: 0.8;
-    display: none;
   }
 }
 .sidebar-toggle:hover .toggle-line {
@@ -2206,11 +2200,11 @@ mjx-container + br {
   padding: 0;
   position: absolute;
   top: 0;
-  width: 240px;
+  width: 250px;
 }
 @media (min-width: 1200px) {
   .header-inner {
-    width: 240px;
+    width: 250px;
   }
 }
 @media (max-width: 991px) {
@@ -2237,7 +2231,7 @@ mjx-container + br {
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12);
   box-sizing: border-box;
   padding: 40px;
-  width: calc(100% - 252px);
+  width: calc(100% - 262px);
 }
 @media (max-width: 991px) {
   .content-wrap {
@@ -2379,7 +2373,7 @@ mjx-container + br {
   box-shadow: none;
   margin-top: 100%;
   position: static;
-  width: 240px;
+  width: 250px;
 }
 @media (max-width: 991px) {
   .sidebar {
@@ -2395,7 +2389,7 @@ mjx-container + br {
   box-shadow: 0 2px 2px 0 rgba(0,0,0,0.12), 0 3px 1px -2px rgba(0,0,0,0.06), 0 1px 5px 0 rgba(0,0,0,0.12), 0 -1px 0.5px 0 rgba(0,0,0,0.09);
   box-sizing: border-box;
   color: var(--text-color);
-  width: 240px;
+  width: 250px;
   opacity: 0;
 }
 .sidebar-inner.affix {
@@ -2475,6 +2469,21 @@ mjx-container + br {
 }
 .links-of-blogroll-item {
   padding: 0;
+  display: inline-block;
+  margin: 5px 0 0;
+  width: unset;
+}
+.links-of-blogroll-item a,
+.links-of-blogroll-item span.exturl {
+  box-sizing: border-box;
+  display: inline-block;
+  margin-bottom: 0;
+  margin-right: 0;
+  max-width: 216px;
+  overflow: hidden;
+  padding: 0 5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .content-wrap {
   background: initial;
