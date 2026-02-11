@@ -42,6 +42,27 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 400;
 }
 
+/* 姓名样式更美观 */
+.d-flex .h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+
+.d-flex .h1 small {
+    font-size: 1.8rem;
+    font-weight: 600;
+    letter-spacing: 0;
+    margin-left: 0.5rem;
+}
+
+/* 经历部分logo样式 - 约占两行高度 */
+.experience-logo {
+    width: 36px;
+    height: 36px;
+    object-fit: contain;
+}
+
 .navbar {
     opacity: 0.95;
 }
