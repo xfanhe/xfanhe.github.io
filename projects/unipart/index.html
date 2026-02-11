@@ -1,0 +1,294 @@
+---
+layout: project
+title : UniPart - Part-Level 3D Generation
+navbar_title: UniPart
+container_class: container-xl
+---
+
+<!-- Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-10">
+        <h1 class="project-title mb-3">UniPart: Part-Level 3D Generation with Unified 3D Geom-Seg Latents</h1>
+
+        <h5 class="project-authors mb-3">
+          <a href="https://xfanhe.github.io/" target="_blank">Xufan He</a><sup class="sup-normal">1,2*</sup>,
+          <a href="https://yushuang-wu.github.io/" target="_blank">Yushuang Wu</a><sup class="sup-normal">2*</sup>,
+          <span>Xiaoyang Guo</span><sup class="sup-normal">2</sup>,
+          <a href="https://hugoycj.github.io/" target="_blank">Chongjie Ye</a><sup class="sup-normal">2,3</sup>,
+          <span>Jiaqing Zhou</span><sup class="sup-normal">2</sup>,
+          <span>Tianlei Hu</span><sup class="sup-normal">2</sup>,
+          <a href="https://gaplab.cuhk.edu.cn/pages/people" target="_blank">Xiaoguang Han</a><sup class="sup-normal">3</sup>,
+          <a href="https://dongdu3.github.io/" target="_blank">Dong Du</a><sup class="sup-normal">1,†</sup>
+        </h5>
+
+        <p class="text-muted small mb-4">
+          <sup class="sup-sm">1</sup><span class="institution">Nanjing University of Science and Technology</span>
+          <sup class="sup-sm">2</sup><span class="institution">ByteDance</span>
+          <sup class="sup-sm">3</sup><span class="institution">The Chinese University of Hong Kong, Shenzhen</span>
+          <br>
+          <sup>*</sup>Equal Contribution &nbsp;&nbsp;
+          <sup>†</sup>Corresponding Author
+        </p>
+
+        <!-- Links -->
+        <div class="mb-4">
+          <a href="https://arxiv.org/abs/2512.09435" target="_blank" class="btn btn-outline-primary mr-2 mb-2">
+            <i class="fas fa-file-pdf"></i> Paper
+          </a>
+          <a href="#" target="_blank" class="btn btn-outline-dark mr-2 mb-2">
+            <i class="fab fa-github"></i> Code
+          </a>
+          <a href="#" target="_blank" class="btn btn-outline-info mr-2 mb-2">
+            <i class="fas fa-database"></i> Model
+          </a>
+        </div>
+
+        <hr class="my-4">
+        <p class="lead">
+          Part-level 3D generation with <strong>unified 3D geometry and segmentation latents</strong>.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Video Demo -->
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-10">
+        <h2 class="mb-4">Video Demo</h2>
+        <div class="card border-0 shadow-sm">
+          <video
+              src="{{ '/projects/unipart/assets/videos/demo.mp4' | relative_url }}"
+              class="card-img-top"
+              controls
+              autoplay
+              muted
+              loop
+              playsinline>
+          </video>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Abstract -->
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center text-center">
+      <div class="col-lg-10">
+        <h2>Abstract</h2>
+        <p class="text-justify">
+          Generating 3D shapes at part level is pivotal for downstream applications such as mesh mesh retopology, UV
+          mapping, and 3D printing. However, existing part-based generation methods often lack sufficient controllability and suffer
+          from poor semantically meaningful decomposition. To this end, we introduce UniPart, a controllable generative model
+          designed to decompose a holistic 3D object into semantically meaningful and structurally coherent parts with high geometric fidelity.
+          UniPart exploits bounding box as prompts for part generation and injects point-wise semantic features for meaningful
+          decomposition. Furthermore, we design an editable pipeline for interactive part generation. Extensive experimental results
+          show that UniPart achieves state-of-the-art performance in part-level shape generation.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive 3D Viewer -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center mb-4">Interactive 3D Demo</h2>
+        <p class="text-center mb-4 text-muted">
+          Drag to rotate, scroll to zoom, right-click to pan
+        </p>
+        <div class="model-viewer-container">
+            <!-- Add your 3D model (.glb or .gltf) to assets/models/ and update src below -->
+            <model-viewer
+                src="{{ 'projects/unipart/assets/models/0c52bdb6591ff53a23f78ec4416b4bfe.glb' | relative_url }}"
+                alt="UniPart 3D Model"
+                auto-rotate
+                camera-controls
+                shadow-intensity="1"
+                shadow-softness="0.5"
+                exposure="1"
+                min-camera-orbit="auto">
+                <!-- Fallback message if model not found -->
+                <div slot="poster" style="display: flex; align-items: center; justify-content: center; height: 100%; color: #666; text-align: center; padding: 20px;">
+                    <div>
+                        <i class="fas fa-cube fa-3x mb-3"></i>
+                        <p class="mb-2">3D Model Coming Soon</p>
+                        <small>Please add .glb or .gltf model file to<br><code>projects/unipart/assets/models/</code></small>
+                    </div>
+                </div>
+            </model-viewer>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Method Overview -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center mb-4">Method Overview</h2>
+        <img src="{{ '/projects/unipart/assets/images/pipeline.jpg' | relative_url }}" alt="Method Pipeline" class="img-fluid rounded shadow-sm w-100">
+        <p class="mt-3 text-muted">
+          Given input point cloud, per-point feature and part bounding boxes are extracted. Global and part
+          conditions are obtained by stacking geometry token with interpolated semantic features. They are injected to
+          multi-part diffusion process to guide shape decomposition.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Interactive Results Gallery -->
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center mb-4">Interactive Results</h2>
+        <p class="text-center mb-4">Click on images to view full results</p>
+
+        <div class="row">
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/000.png' | relative_url }}"
+                   alt="Result 1"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/001.png' | relative_url }}"
+                   alt="Result 2"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/002.png' | relative_url }}"
+                   alt="Result 3"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/003.png' | relative_url }}"
+                   alt="Result 4"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/004.png' | relative_url }}"
+                   alt="Result 5"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/005.png' | relative_url }}"
+                   alt="Result 6"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/006.png' | relative_url }}"
+                   alt="Result 7"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/007.png' | relative_url }}"
+                   alt="Result 8"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/008.png' | relative_url }}"
+                   alt="Result 9"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/009.png' | relative_url }}"
+                   alt="Result 10"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+          <div class="col-6 col-md-4 col-lg-3 mb-3">
+            <div class="card border-0 shadow-sm">
+              <img src="{{ '/projects/unipart/assets/images/010.png' | relative_url }}"
+                   alt="Result 11"
+                   class="card-img-top"
+                   loading="lazy">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Applications -->
+<section class="section bg-light">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center mb-4">Applications</h2>
+        <p class="text-center mb-4">
+          3D part amodal segmentation is capable of numerous downstream applications,
+          such as <strong>Part Editing, UV Unwrapping</strong>.
+        </p>
+        <img src="{{ '/projects/unipart/assets/images/application.png' | relative_url }}"
+             alt="Applications"
+             class="img-fluid rounded shadow-sm w-100">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BibTeX -->
+<section class="section">
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-10">
+        <h2 class="text-center mb-4">BibTeX</h2>
+        <div class="card border-0 shadow-sm">
+          <div class="card-body p-3">
+            <pre class="mb-0"><code>@misc{he2025unipartpartlevel3dgeneration,
+      title={UniPart: Part-Level 3D Generation with Unified 3D Geom-Seg Latents}, 
+      author={Xufan He and Yushuang Wu and Xiaoyang Guo and Chongjie Ye and Jiaqing Zhou and Tianlei Hu and Xiaoguang Han and Dong Du},
+      year={2025},
+      eprint={2512.09435},
+      archivePrefix={arXiv},
+      primaryClass={cs.CV},
+      url={https://arxiv.org/abs/2512.09435}, 
+}</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

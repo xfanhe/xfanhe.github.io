@@ -54,15 +54,17 @@ email: "xfanhe@njust.edu.cn"
 - **作者**: Xufan He*, Yushuang Wu*, Xiaoyang Guo, Chongjie Ye, Jiaqing Zhou, Tianlei Hu, Xiaoguang Han, Dong Du
 - **发表**: Preprint 2026
 - **链接**: https://arxiv.org/abs/2512.09435
-- **文件**: `_publications/2025/2025-unipart.md`
+- **文件**: `_publications/2026/2026-unipart.md`
 - **图片**: `assets/images/covers/unipart_local.png`
+- **项目页面**: `/projects/unipart/` (包含视频演示、3D查看器、结果图库)
 
 ### 2. NGR
 
-- **标题**: NGR: Neural Gradient Rendering for High-Quality 3D Reconstruction from Multi-View Images
+- **标题**: NGR: Neural Gradient Rendering for
 - **作者**: Xufan He, Dong Du, Yushuang Wu, Yunbi Liu
 - **发表**: Computational Visual Media (CVM), 2026 (CCF C)
-- **文件**: `_publications/2025/2025-ngr.md`
+- **链接**: https://arxiv.org/...
+- **文件**: `_publications/2026/2026-ngr.md`
 - **图片**: `assets/images/covers/ngr_local.png`
 
 ---
@@ -77,21 +79,33 @@ xfanhe.github.io/
 │   ├── navigation.yml         # 导航菜单
 │   └── authors.yml            # 作者信息
 ├── _includes/                 # HTML 组件
+│   └── widgets/              # 页面小组件
 ├── _layouts/                  # 页面布局
-├── _news/                     # 新闻动态 (已清理)
+│   ├── default.html
+│   └── project.html           # 项目详情页布局（含3D Viewer支持）
+├── _news/                     # 新闻动态 (保留目录)
 ├── _publications/             # 论文发表
-│   └── 2025/
-│       ├── 2025-unipart.md
-│       └── 2025-ngr.md
-├── _showcase/                 # 展示内容 (已清理)
+│   └── 2026/
+│       ├── 2026-unipart.md
+│       └── 2026-ngr.md
+├── _showcase/                 # 展示内容
+├── projects/                   # 项目详情页
+│   └── unipart/
+│       ├── index.html
+│       └── assets/
+│           ├── images/          # 项目图片
+│           ├── videos/          # 项目视频
+│           └── models/          # 3D模型文件 (需自行添加)
 ├── _site/                     # 构建输出
 ├── assets/
 │   ├── images/
 │   │   ├── badges/           # 学校/机构 Logo
+│   │   │   ├── njust.png      # 南京理工大学
+│   │   │   └── bytedance.png # 字节跳动
 │   │   ├── covers/           # 论文封面图
-│   │   │   ├── unipart_local.png
-│   │   │   └── ngr_local.png
 │   │   └── photos/           # 个人照片
+│   ├── css/
+│   │   └── global.css        # 全局样式
 │   └── js/                   # JavaScript
 ├── CLAUDE.md                 # 本文档
 ├── index.html                # 主页 (单栏布局)
@@ -103,7 +117,7 @@ xfanhe.github.io/
 
 ## 主页布局
 
-使用 **单栏布局** (原 index_layout2 风格)：
+使用 **单栏布局**：
 
 - 姓名和个人信息显示在主内容区顶部
 - 无侧边栏
@@ -113,6 +127,41 @@ xfanhe.github.io/
 - Home → `/`
 - Publications → `/publications`
 - Showcase → `/showcase`
+
+---
+
+## 项目详情页功能
+
+### UniPart 项目页面 (`/projects/unipart/`)
+
+支持多媒体内容展示：
+
+| 内容类型 | 实现方式 |
+|---------|---------|
+| **图片** | `<img>` 标签，响应式网格布局 |
+| **视频** | HTML5 `<video>` 标签，支持自动播放、静音、循环 |
+| **3D Mesh Viewer** | Google Model Viewer (Web Components)，支持拖拽旋转、滚轮缩放、右键平移 |
+
+### 页面结构
+
+1. **Hero Section** - 标题、作者信息、Paper/Code/Model 链接
+2. **Abstract** - 论文摘要
+3. **Video Demo** - 视频演示
+4. **Interactive 3D Demo** - 3D 模型交互查看器
+5. **Method Overview** - 方法流程图
+6. **Interactive Results** - 结果图片网格 (11张结果图)
+7. **Applications** - 应用展示
+8. **BibTeX** - 引用格式
+
+### 3D 模型添加
+
+将 `.glb` 或 `.gltf` 模型文件放到：
+
+```
+projects/unipart/assets/models/model.glb
+```
+
+然后在 `projects/unipart/index.html` 中更新 `src` 路径。
 
 ---
 
@@ -136,6 +185,7 @@ cover: /assets/images/covers/paper_image.png
 links:
   Paper: https://arxiv.org/...
   Code: https://github.com/...
+  Project: /projects/unipart/  # 添加项目页面入口
 ---
 ```
 
@@ -146,6 +196,7 @@ links:
 ```yaml
 experience:
 - name: 公司名称
+  logo: /assets/images/badges/company.png  # 支持Logo
   position: >-
     职位名称 <br/>
     其他说明
@@ -158,6 +209,25 @@ experience:
 
 ---
 
+## 样式说明
+
+### 全局样式 (`assets/css/global.css`)
+
+- `.experience-logo` - 经历部分 Logo 样式 (48x48px)
+- `.project-title` - 项目页面标题样式 (粗体，较小字号)
+- `.project-authors` - 项目页面作者样式
+- `.sup-normal` - 普通上标样式
+- `.sup-sm` - 小上标样式
+- `.institution` - 单位名称样式
+
+### 经历卡片对齐
+
+在 `_includes/widgets/experience_card.html` 中：
+- `<li class="media mb-1 align-items-center">` - 添加 Bootstrap 的 `align-items-center` 类
+- 确保 Logo 图片和右侧文字块垂直居中对齐
+
+---
+
 ## 部署说明
 
 1. 本地预览：
@@ -165,10 +235,14 @@ experience:
    bundle exec jekyll serve
    ```
 
-2. 推送到 GitHub 自动部署：
+2. 提交更改：
    ```bash
    git add .
-   git commit -m "Update homepage"
+   git commit -m "Update message"
+   ```
+
+3. 推送到 GitHub：
+   ```bash
    git push origin main
    ```
 

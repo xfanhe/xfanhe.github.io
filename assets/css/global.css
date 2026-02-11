@@ -42,7 +42,6 @@ h1, h2, h3, h4, h5, h6,
     font-weight: 400;
 }
 
-/* 姓名样式更美观 */
 .d-flex .h1 {
     font-size: 2.5rem;
     font-weight: 700;
@@ -56,7 +55,6 @@ h1, h2, h3, h4, h5, h6,
     margin-left: 0.5rem;
 }
 
-/* 经历部分logo样式 - 约占两行高度 */
 .experience-logo {
     width: 36px;
     height: 36px;
@@ -109,5 +107,63 @@ div.lazy {
 
 .email-text {
     font-family: Source Code Pro, monospace;
+}
+
+/* Project Page Styles */
+.hero-section {
+    padding: 4rem 0 2rem;
+}
+
+.section {
+    padding: 4rem 0;
+}
+
+.section.bg-light {
+    background-color: #f8f9fa;
+}
+
+/* Fix Bootstrap spacing */
+.btn {
+    margin-bottom: 0.5rem;
+}
+
+.text-justify {
+    text-align: justify;
+}
+
+/* Video styles */
+video {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: 0.8rem 0.8rem 0 0;
+}
+
+/* Project page styles */
+.project-title {
+    font-size: 3rem;
+    font-weight: 700;
+}
+
+.project-authors {
+    font-size: 1rem;
+    font-weight: 600;
+    line-height: 1.6;
+}
+
+.sup-normal {
+    font-size: 0.75rem;
+    vertical-align: super;
+    margin-left: 2px;
+}
+
+.sup-sm {
+    font-size: 0.7rem;
+    vertical-align: super;
+    margin-left: 1px;
+}
+
+.institution {
+    margin-right: 1.5rem;
 }
 
