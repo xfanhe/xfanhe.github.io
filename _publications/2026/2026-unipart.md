@@ -5,7 +5,7 @@ selected:       true
 pub:            "Preprint"
 pub_date:       "2026"
 abstract: >-
-  We propose UniPart, a novel framework for part-level 3D generation with unified 3D geometry and segmentation latents. Our approach enables fine-grained control over 3D object parts while maintaining global coherence.
+  UniPart proposes a unified geometry-segmentation latent representation that jointly encodes object geometry and part-level structure, enabling high-fidelity part-level 3D generation.
 cover:          /assets/images/covers/unipart_local.png
 authors:
   - Xufan He*
