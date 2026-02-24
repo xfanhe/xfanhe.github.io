@@ -13,8 +13,8 @@ container_class: container-xl
         <h1 class="project-title mb-3">UniPart: Part-Level 3D Generation with Unified 3D Geom-Seg Latents</h1>
 
         <h5 class="project-authors mb-3">
-          <a href="https://xfanhe.github.io/" target="_blank">Xufan He</a><sup class="sup-normal">1,2*</sup>,
-          <a href="https://yushuang-wu.github.io/" target="_blank">Yushuang Wu</a><sup class="sup-normal">2*</sup>,
+          <a href="https://xfanhe.github.io/" target="_blank">Xufan He</a><sup class="sup-normal">1,2,*</sup>,
+          <a href="https://yushuang-wu.github.io/" target="_blank">Yushuang Wu</a><sup class="sup-normal">2, *‡</sup>,
           <span>Xiaoyang Guo</span><sup class="sup-normal">2</sup>,
           <a href="https://hugoycj.github.io/" target="_blank">Chongjie Ye</a><sup class="sup-normal">2,3</sup>,
           <span>Jiaqing Zhou</span><sup class="sup-normal">2</sup>,
@@ -29,7 +29,10 @@ container_class: container-xl
           <sup class="sup-sm">3</sup><span class="institution">The Chinese University of Hong Kong, Shenzhen</span>
           <br>
           <sup>*</sup>Equal Contribution &nbsp;&nbsp;
-          <sup>†</sup>Corresponding Author
+          <sup>†</sup>Corresponding Author &nbsp;&nbsp;
+          <sup>‡</sup>Project Leader
+          <br>
+          This work was done by Xufan He as an internship at ByteDance supervised by Yushuang Wu.
         </p>
 
         <!-- Links -->
@@ -49,17 +52,7 @@ container_class: container-xl
         <p class="lead">
           Part-level 3D generation with <strong>unified 3D geometry and segmentation latents</strong>.
         </p>
-      </div>
-    </div>
-  </div>
-</section>
 
-<!-- Video Demo -->
-<section class="section">
-  <div class="container">
-    <div class="row justify-content-center text-center">
-      <div class="col-lg-10">
-        <h2 class="mb-4">Video Demo</h2>
         <div class="card border-0 shadow-sm">
           <video
               src="{{ '/projects/unipart/assets/videos/demo.mp4' | relative_url }}"
@@ -71,6 +64,15 @@ container_class: container-xl
               playsinline>
           </video>
         </div>
+
+        <img src="{{ '/projects/unipart/assets/images/comp.png' | relative_url }}"
+             alt="Method Pipeline" 
+             class="img-fluid rounded shadow-sm w-100 mt-5">
+        <p class="mt-3 text-muted text-left">
+          Qualitative results of part-level 3D generation for a given image. We visualize the “exploded” parts in the first line of each
+          mesh pair for better visualization of part generation. Our UniPart can produce more reasonable part segmentations and higher-quality part
+          geometries.
+        </p>
       </div>
     </div>
   </div>
@@ -90,17 +92,18 @@ container_class: container-xl
   </div>
 </section>
 
-<!-- Method Overview -->
+<!-- Pipeline -->
 <section class="section bg-light">
   <div class="container">
     <div class="row justify-content-center">
       <div class="col-lg-10">
-        <h2 class="text-center mb-4">Method Overview</h2>
-        <img src="{{ '/projects/unipart/assets/images/pipeline.jpg' | relative_url }}" alt="Method Pipeline" class="img-fluid rounded shadow-sm w-100">
+        <h2 class="text-center mb-4">Pipeline</h2>
+        <img src="{{ '/projects/unipart/assets/images/pipeline.png' | relative_url }}" alt="Method Pipeline" class="img-fluid rounded shadow-sm w-100">
         <p class="mt-3 text-muted">
-          Given input point cloud, per-point feature and part bounding boxes are extracted. Global and part
-          conditions are obtained by stacking geometry token with interpolated semantic features. They are injected to
-          multi-part diffusion process to guide shape decomposition.
+          The pipeline of UniPart. It includes a Geom-Seg VAE that encodes both whole geometry and part segmentation information into
+          a unified representation, Geom-Seg VecSet. The image-guided part-level generation adopts a two-level pipeline, where a whole-level DiT
+          first generates the whole geometry and segmented part latent, and a part-level DiT then accepts the input image and the whole-part latent
+          as conditions for dual-space part latent generation. The final object mesh is composed of each full-resolution part mesh.
         </p>
       </div>
     </div>
