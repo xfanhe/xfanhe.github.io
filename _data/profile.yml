@@ -43,12 +43,16 @@ education:
   date: Sep. 2021 - Jun. 2025
 
 experience:
+- name: VAST
+  logo: /assets/images/badges/vast.png
+  position: >-
+    Research Intern <br/>
+  date: May 2026 - present
 - name: ByteDance
   logo: /assets/images/badges/bytedance.png
   position: >-
     Research Intern @ Game AIGC <br/>
-    Supervised by Yushuang Wu
-  date: May 2025 - present
+  date: May 2025 - May 2026
 
 awards:
 # Add your awards and honors here

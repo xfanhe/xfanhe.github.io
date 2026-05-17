@@ -17,6 +17,6 @@ authors:
   - Xiaoguang Han
   - Dong Du#
 links:
-  Paper: https://arxiv.org/abs/2512.09435
+  Paper: https://arxiv.org/pdf/2512.09435
   Project page: /projects/unipart/
 ---
