@@ -1,6 +1,6 @@
 primary_name: "Xufan He"
 secondary_name: ""
-navbar_name: "何许凡 / Xufan He"
+navbar_name: "Xufan He"
 
 positions:
 - name: Master Student
@@ -8,7 +8,7 @@ positions:
   # logo: /assets/images/badges/NJUST_logo.png  # Add NJUST logo here (optional)
 
 email: "xfanhe@njust.edu.cn"
-cv_link: cv.pdf
+# cv_link: cv.pdf
 gscholar: 1h5vT9kAAAAJ
 github: xfanhe
 twitter:  # Do not include the '@' symbol
